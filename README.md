@@ -1,6 +1,8 @@
-# 政治闪卡
+# 政治闪卡（静态看板）
 
-静态看板（GitHub Pages 用户站）。
+Live: https://kada666.github.io/
 
-**仅供个人使用，不得用于任何商业价值或相关商业化使用。**
-**Personal use only. Not for any commercial use or commercialization.**
+仅供个人学习，不得用于任何商业用途。
+Personal study only — not for commercial use.
+
+Source (private): https://github.com/Kada666/zhengzhi-flash
