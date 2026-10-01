@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>考研英语看板</title>
+<style>
+  :root { color-scheme: light; --bg:#f4f1ea; --ink:#1c1915; --muted:#6d655c; --line:#e4ddd2; --card:#fffdf9; --accent:#9a3412; --mark:#fde68a; --ok:#3f6212; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:16px/1.65 "Iowan Old Style", Palatino, "Songti SC", serif; background:var(--bg); color:var(--ink); }
+  header { padding:18px 18px 8px; }
+  h1 { font-size:22px; margin:0 0 4px; }
+  .sub { color:var(--muted); font-size:13px; font-family: ui-sans-serif, system-ui, sans-serif; }
+  nav { display:flex; gap:6px; padding:8px 14px 12px; overflow:auto; position:sticky; top:0; background:rgba(244,241,234,.94); z-index:3; }
+  nav button { border:1px solid var(--line); background:var(--card); border-radius:999px; padding:7px 12px; font:13px/1 ui-sans-serif, system-ui, sans-serif; }
+  nav button.on { background:var(--ink); color:#fff; border-color:var(--ink); }
+  main { padding:0 14px 48px; max-width:760px; margin:0 auto; }
+  article { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px 16px 12px; margin:0 0 14px; }
+  .kicker { font:12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); }
+  h2 { font-size:20px; margin:6px 0 8px; }
+  p { margin:0 0 12px; }
+  .w { cursor:pointer; -webkit-touch-callout:none; user-select:none; }
+  .w.hit { background:var(--mark); border-radius:3px; }
+  .w.tgt { border-bottom:1px dashed #d6c7b0; }
+  .meta { font:12px/1.4 ui-sans-serif, system-ui, sans-serif; color:var(--muted); }
+  .quiz button { display:block; width:100%; text-align:left; margin:6px 0; padding:8px 10px; border-radius:10px; border:1px solid var(--line); background:#fff; font:14px/1.4 ui-sans-serif, system-ui, sans-serif; }
+  .quiz button.good { border-color:var(--ok); background:#f3f7ea; }
+  .quiz button.bad { border-color:var(--accent); background:#fdf2ee; }
+  .row { display:flex; justify-content:space-between; gap:10px; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin:0 0 6px; font-family: ui-sans-serif, system-ui, sans-serif; }
+  input[type=search] { width:100%; border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin:0 0 10px; font:15px/1 ui-sans-serif, system-ui, sans-serif; }
+  .bar { display:flex; gap:8px; margin:8px 0 12px; }
+  .bar button { border:1px solid var(--line); background:#fff; border-radius:10px; padding:8px 10px; font:13px/1 ui-sans-serif, system-ui, sans-serif; }
+  .toast { position:fixed; left:50%; bottom:22px; transform:translateX(-50%); background:var(--ink); color:#fff; padding:8px 12px; border-radius:999px; display:none; font:13px/1 ui-sans-serif, system-ui, sans-serif; }
+  .note { font:13px/1.5 ui-sans-serif, system-ui, sans-serif; color:var(--muted); }
+</style>
+</head>
+<body>
+<header><h1>考研英语看板</h1><div class="sub">英语二 · 今日两篇 · 长按单词收入错题本</div></header>
+nav>
+  <button class="on" data-tab="today">今日</button>
+  <button data-tab="key">重点词</button>
+  <button data-tab="reading">阅读词</button>
+  <button data-tab="wrong">错题本</button>
+</nav>
+<main id="app"></main>
+<div class="toast" id="toast"></div>
+<script>
+let DATA = {key:[], reading:[], articles:[]};
+async function load(){
+  const get = async (url) => { try { const r = await fetch(url); if (!r.ok) return []; return r.json(); } catch(e){ return []; } };
+  const [a,k0,k1,k2,r] = await Promise.all(["data/articles.json","data/key-0.json","data/key-1.json","data/key-2.json","data/reading.json"].map(get));
+  DATA = {articles: a||[], key:[...(k0||[]),...(k1||[]),...(k2||[])], reading:r||[]};
+  show("today");
+}
+const KEY = "kaoyan-en-wrong-v1";
+const state = JSON.parse(localStorage.getItem(KEY) || '{"wrong":{}}');
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+function toast(t){ const el=document.getElementById("toast"); el.textContent=t; el.style.display="block"; clearTimeout(toast._t); toast._t=setTimeout(()=>el.style.display="none", 1400); }
+function mark(word, source){
+  const cur = state.wrong[word] || {word, count:0, source, first: new Date().toISOString()};
+  cur.count += 1; cur.source = cur.source || source; cur.last = new Date().toISOString();
+  state.wrong[word] = cur; save(); toast(word + " 已收入错题本 · " + cur.count);
+  document.querySelectorAll('[data-w="'+word+'"]').forEach(n => n.classList.add("hit"));
+}
+function bindWords(root){
+  root.querySelectorAll(".w").forEach(el => {
+    const word = el.dataset.w; let timer = null;
+    el.addEventListener("contextmenu", (e) => { e.preventDefault(); mark(word, el.dataset.src); });
+    el.addEventListener("touchstart", () => { timer = setTimeout(() => mark(word, el.dataset.src), 460); }, {passive:true});
+    el.addEventListener("touchend", () => clearTimeout(timer));
+    el.addEventListener("touchmove", () => clearTimeout(timer));
+    if (state.wrong[word]) el.classList.add("hit");
+  });
+}
+function renderPassage(a){
+  const targets = new Set(a.targets);
+  const html = a.paragraphs.map(p => "<p>"+p.split(/(\b[A-Za-z][A-Za-z'\-]+\b)/).map(tok => {
+    const low = tok.toLowerCase();
+    if (targets.has(low)) return '<span class="w tgt" data-w="'+low+'" data-src="'+a.track+'">'+tok+'</span>';
+    return tok;
+  }).join("")+"</p>").join("");
+  const quiz = a.quiz.map((q,i) => '<div class="quiz" data-qi="'+i+'"><div class="meta">'+q.q+'</div>'+q.options.map((op,j)=>'<button data-j="'+j+'">'+op+'</button>').join("")+"</div>").join("");
+  return '<article><div class="kicker">'+a.track+' · '+a.minutes+' 分钟</div><h2>'+a.title+'</h2>'+html+'<div class="meta">长按虚线下的词约半秒，标进错题本。数据在这台浏览器里。</div>'+quiz+'</article>';
+}
+function wordRows(list, q){
+  q = (q||"").trim().toLowerCase();
+  const rows = list.filter(x => !q || x.w.includes(q)).slice(0, 250);
+  return '<div class="list">'+rows.map(x => '<div class="row"><b class="w" data-w="'+x.w+'" data-src="词库">'+x.w+'</b><span class="meta">机读横线 '+x.m+(x.s? " · "+x.s:"")+'</span></div>').join("")+'</div>';
+}
+function renderWrong(){
+  const items = Object.values(state.wrong).sort((a,b)=>b.count-a.count);
+  if (!items.length) return '<p class="note">还没有标错。在今日文章里长按一个词。</p>';
+  return '<div class="list">'+items.map(x => '<div class="row"><b>'+x.word+'</b><span class="meta">'+(x.source||"")+' · '+x.count+' 次</span></div>').join("")+'</div>';
+}
+function show(tab){
+  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.tab===tab));
+  const app = document.getElementById("app");
+  if (tab==="today"){
+    app.innerHTML = '<p class="note">两篇是 10 月 1 日样稿，词来自你的两份表，文章是新写的，不是真题原文。长按目标词约半秒。</p>'+DATA.articles.map(renderPassage).join("");
+  } else if (tab==="key"){
+    app.innerHTML = '<p class="note">重点词 '+DATA.key.length+'。机读横线不是手写错次原值。</p><input type="search" placeholder="筛单词" id="q">'+wordRows(DATA.key, "");
+  } else if (tab==="reading"){
+    app.innerHTML = '<p class="note">阅读词可用 '+DATA.reading.length+'。2020 Text 3/4 和 2021 手写页没稳定抽出。</p><input type="search" placeholder="筛单词" id="q">'+wordRows(DATA.reading, "");
+  } else {
+    app.innerHTML = '<div class="bar"><button id="exp">导出错题本</button><button id="clr">清空本机错题</button></div>'+renderWrong();
+  }
+  bindWords(app);
+  const q = document.getElementById("q");
+  if (q) q.addEventListener("input", () => {
+    const list = tab==="key" ? DATA.key : DATA.reading;
+    app.querySelector(".list").outerHTML = wordRows(list, q.value);
+    bindWords(app);
+  });
+  app.querySelectorAll(".quiz button").forEach(btn => btn.addEventListener("click", () => {
+    const box = btn.parentElement;
+    const qi = +box.dataset.qi;
+    const article = DATA.articles.find(a => box.closest("article").querySelector("h2").textContent === a.title);
+    const right = article.quiz[qi].a;
+    box.querySelectorAll("button").forEach((b,j) => b.classList.add(j===right?"good":(+b.dataset.j===+btn.dataset.j?"bad":"")));
+  }));
+  const exp = document.getElementById("exp");
+  if (exp) exp.onclick = () => {
+    const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "wrongbook.json"; a.click();
+  };
+  const clr = document.getElementById("clr");
+  if (clr) clr.onclick = () => { if (confirm("清空这台手机上的错题本？")) { state.wrong = {}; save(); show("wrong"); } };
+}
+document.querySelectorAll("nav button").forEach(b => b.onclick = () => show(b.dataset.tab));
+load();
+</script>
+</body>
+</html>
