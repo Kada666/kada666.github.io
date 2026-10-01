@@ -4,131 +4,214 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#14120f">
 <title>考研英语看板</title>
 <style>
-  :root { color-scheme: light; --bg:#f4f1ea; --ink:#1c1915; --muted:#6d655c; --line:#e4ddd2; --card:#fffdf9; --accent:#9a3412; --mark:#fde68a; --ok:#3f6212; }
+  :root {
+    color-scheme: dark;
+    --bg:#14120f; --ink:#f3efe6; --muted:#a3988c; --line:#2c2823;
+    --card:#1c1916; --accent:#e7b48a; --mark:#6b5428; --ok:#b7c7a1; --bad:#d7a394;
+  }
   * { box-sizing: border-box; }
-  body { margin:0; font:16px/1.65 "Iowan Old Style", Palatino, "Songti SC", serif; background:var(--bg); color:var(--ink); }
-  header { padding:18px 18px 8px; }
-  h1 { font-size:22px; margin:0 0 4px; }
-  .sub { color:var(--muted); font-size:13px; font-family: ui-sans-serif, system-ui, sans-serif; }
-  nav { display:flex; gap:6px; padding:8px 14px 12px; overflow:auto; position:sticky; top:0; background:rgba(244,241,234,.94); z-index:3; }
-  nav button { border:1px solid var(--line); background:var(--card); border-radius:999px; padding:7px 12px; font:13px/1 ui-sans-serif, system-ui, sans-serif; }
-  nav button.on { background:var(--ink); color:#fff; border-color:var(--ink); }
-  main { padding:0 14px 48px; max-width:760px; margin:0 auto; }
-  article { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px 16px 12px; margin:0 0 14px; }
+  html, body { margin:0; background:var(--bg); color:var(--ink); }
+  body { font:17px/1.7 "Iowan Old Style", Palatino, "Songti SC", serif; padding-bottom:28px; }
+  header { padding:18px 18px 4px; }
+  h1 { font-size:22px; margin:0; font-weight:560; }
+  .sub { margin-top:4px; color:var(--muted); font:13px/1.4 ui-sans-serif, system-ui, sans-serif; }
+  nav { display:flex; gap:8px; padding:12px 14px; position:sticky; top:0; background:rgba(20,18,15,.92); backdrop-filter:blur(10px); z-index:4; }
+  nav button { border:1px solid var(--line); background:transparent; color:var(--ink); border-radius:999px; padding:8px 14px; font:13px/1 ui-sans-serif, system-ui, sans-serif; }
+  nav button.on { background:var(--ink); color:#1a1612; border-color:var(--ink); }
+  main { padding:0 14px 40px; max-width:720px; margin:0 auto; }
+  article, .panel { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px; margin:0 0 12px; }
   .kicker { font:12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); }
-  h2 { font-size:20px; margin:6px 0 8px; }
+  h2 { font-size:20px; margin:6px 0 10px; font-weight:560; }
   p { margin:0 0 12px; }
-  .w { cursor:pointer; -webkit-touch-callout:none; user-select:none; }
-  .w.hit { background:var(--mark); border-radius:3px; }
-  .w.tgt { border-bottom:1px dashed #d6c7b0; }
-  .meta { font:12px/1.4 ui-sans-serif, system-ui, sans-serif; color:var(--muted); }
-  .quiz button { display:block; width:100%; text-align:left; margin:6px 0; padding:8px 10px; border-radius:10px; border:1px solid var(--line); background:#fff; font:14px/1.4 ui-sans-serif, system-ui, sans-serif; }
-  .quiz button.good { border-color:var(--ok); background:#f3f7ea; }
-  .quiz button.bad { border-color:var(--accent); background:#fdf2ee; }
-  .row { display:flex; justify-content:space-between; gap:10px; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin:0 0 6px; font-family: ui-sans-serif, system-ui, sans-serif; }
-  input[type=search] { width:100%; border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin:0 0 10px; font:15px/1 ui-sans-serif, system-ui, sans-serif; }
-  .bar { display:flex; gap:8px; margin:8px 0 12px; }
-  .bar button { border:1px solid var(--line); background:#fff; border-radius:10px; padding:8px 10px; font:13px/1 ui-sans-serif, system-ui, sans-serif; }
-  .toast { position:fixed; left:50%; bottom:22px; transform:translateX(-50%); background:var(--ink); color:#fff; padding:8px 12px; border-radius:999px; display:none; font:13px/1 ui-sans-serif, system-ui, sans-serif; }
-  .note { font:13px/1.5 ui-sans-serif, system-ui, sans-serif; color:var(--muted); }
+  .w { border-radius:3px; -webkit-touch-callout:none; user-select:none; }
+  .w.hit { background:var(--mark); box-shadow:inset 0 -1px 0 var(--accent); }
+  .w.press { background:#3a3228; }
+  .meta, .note, .why, .gloss { font:13px/1.45 ui-sans-serif, system-ui, sans-serif; color:var(--muted); }
+  .note { margin:0 0 12px; }
+  .quiz { margin-top:8px; }
+  .q { margin:0 0 8px; color:var(--ink); }
+  .opt { display:block; width:100%; text-align:left; margin:6px 0; padding:10px 12px; border-radius:12px; border:1px solid var(--line); background:#161410; color:var(--ink); font:14px/1.4 ui-sans-serif, system-ui, sans-serif; }
+  .opt.pick { border-color:var(--accent); }
+  .opt.good { border-color:var(--ok); background:#24291f; }
+  .opt.bad { border-color:var(--bad); background:#2a211e; }
+  .act { width:100%; margin-top:8px; border:0; border-radius:12px; padding:12px; background:var(--accent); color:#1a1612; font:15px/1 ui-sans-serif, system-ui, sans-serif; }
+  .act:disabled { opacity:.45; }
+  .why { margin-top:8px; color:var(--ok); }
+  .gloss { margin-top:6px; color:var(--accent); }
+  .lock { color:var(--muted); font:14px/1.5 ui-sans-serif, system-ui, sans-serif; }
+  .row { display:flex; justify-content:space-between; gap:10px; padding:10px 0; border-bottom:1px solid var(--line); font-family:ui-sans-serif, system-ui, sans-serif; }
+  .row b { font-weight:640; }
+  .bar { display:flex; gap:8px; margin:0 0 12px; }
+  .bar button { flex:1; border:1px solid var(--line); background:#161410; color:var(--ink); border-radius:10px; padding:10px; font:13px/1 ui-sans-serif, system-ui, sans-serif; }
+  .toast { position:fixed; left:50%; bottom:22px; transform:translateX(-50%); background:#f3efe6; color:#1a1612; padding:8px 12px; border-radius:999px; display:none; z-index:6; font:13px/1 ui-sans-serif, system-ui, sans-serif; }
 </style>
 </head>
 <body>
-<header><h1>考研英语看板</h1><div class="sub">英语二 · 今日两篇 · 长按单词收入错题本</div></header>
-nav>
+<header>
+  <h1>考研英语看板</h1>
+  <div class="sub">英语二 lite · 先读再做 · 提交后才给依据 · 长按标词</div>
+</header>
+<nav>
   <button class="on" data-tab="today">今日</button>
-  <button data-tab="key">重点词</button>
-  <button data-tab="reading">阅读词</button>
   <button data-tab="wrong">错题本</button>
 </nav>
 <main id="app"></main>
 <div class="toast" id="toast"></div>
 <script>
-let DATA = {key:[], reading:[], articles:[]};
-async function load(){
-  const get = async (url) => { try { const r = await fetch(url); if (!r.ok) return []; return r.json(); } catch(e){ return []; } };
-  const [a,k0,k1,k2,r] = await Promise.all(["data/articles.json","data/key-0.json","data/key-1.json","data/key-2.json","data/reading.json"].map(get));
-  DATA = {articles: a||[], key:[...(k0||[]),...(k1||[]),...(k2||[])], reading:r||[]};
-  show("today");
-}
-const KEY = "kaoyan-en-wrong-v1";
-const state = JSON.parse(localStorage.getItem(KEY) || '{"wrong":{}}');
+const PACK = {
+  date: "2026-10-02",
+  passages: [
+    {
+      id: "p1",
+      title: "The thin margin",
+      minutes: 4,
+      paragraphs: [
+        "City governments now compete for skilled workers who can live almost anywhere. A new campus or a tax cut is often alleged to accelerate growth. The estimates, however, rarely survive contact with the housing market.",
+        "Where the margin between wages and rent is already thin, a severe shortage of small flats matters more than another slogan. Officials are prone to treat a press release as a policy. An effective initiative is usually dull: it suspends a rule that blocks small homes, then checks whether builders actually show up.",
+        "Optimistic forecasts still transform the headlines. They seldom transform a lease. Cities that prevail are the ones that can indicate, in numbers rather than adjectives, that an ordinary household can remain."
+      ],
+      gloss: {alleged:"声称",estimates:"估计",however:"然而",margin:"差额、余地",severe:"严重的",shortage:"短缺",prone:"易于",initiative:"举措",suspends:"暂停",prevail:"占上风",indicate:"表明"},
+      quiz: [
+        {q:"The author suggests that official growth estimates", options:["are usually confirmed by the housing market","often fail once rent is taken into account","depend on a new campus being built","have already solved the shortage of flats"], a:1, why:"however 后面才是观点：估计一碰到房租就站不住。A 把转折说反了。"}
+      ]
+    },
+    {
+      id: "p2",
+      title: "After the dry year",
+      minutes: 5,
+      paragraphs: [
+        "A long drought does more than fill the news. It cuts acreage and leaves farmers with only a few weeks of certainty. Haste here is expensive. A federal grant can leverage private credit, but it cannot compensate for a staple crop that never came up.",
+        "The shortage is no longer a purely rural problem. Towns that overlook how failed harvests are handled soon feel the pressure on prices. The incentive to recruit seasonal labour weakens once farms cannot pay. Some workers leave. Others stay and plant less.",
+        "Public money still arrives. What it rarely does is arrive before the decision to abandon a field has already been made. The tendency, unless the grant comes earlier, is to insure more and grow less."
+      ],
+      gloss: {drought:"干旱",acreage:"耕地面积",haste:"仓促",federal:"联邦的",leverage:"撬动",compensate:"补偿",shortage:"短缺",overlook:"忽视",incentive:"激励",tendency:"倾向"},
+      quiz: [
+        {q:"A federal grant is described as", options:["a full substitute for a lost harvest","a way to draw in private credit, not a replacement for the crop","the reason farmers plant more acreage","a payment that always arrives before sowing"], a:1, why:"but 把「撬动私人信贷」和「替代绝收」切开。A 是 but 前面的误读。"},
+        {q:"The author's main warning is that", options:["seasonal workers prefer cities","aid often comes after farmers have already given up a field","droughts no longer affect prices","insurance has made farming risk-free"], a:1, why:"末段 rarely 才是结论。D 把 insure more 夸成没有风险。"}
+      ]
+    }
+  ]
+};
+const KEY = "kaoyan-en-board-v2";
+let state = JSON.parse(localStorage.getItem(KEY) || '{"wrong":{},"pick":{},"submitted":{}}');
 function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
-function toast(t){ const el=document.getElementById("toast"); el.textContent=t; el.style.display="block"; clearTimeout(toast._t); toast._t=setTimeout(()=>el.style.display="none", 1400); }
-function mark(word, source){
-  const cur = state.wrong[word] || {word, count:0, source, first: new Date().toISOString()};
-  cur.count += 1; cur.source = cur.source || source; cur.last = new Date().toISOString();
-  state.wrong[word] = cur; save(); toast(word + " 已收入错题本 · " + cur.count);
+function toast(t){ const el=document.getElementById("toast"); el.textContent=t; el.style.display="block"; clearTimeout(toast._t); toast._t=setTimeout(()=>el.style.display="none", 1200); }
+function sentenceOf(el){
+  const p = el.closest("p");
+  return p ? p.textContent.replace(/\s+/g," ").trim() : "";
+}
+function toggle(el){
+  const word = el.dataset.w;
+  if (state.wrong[word]) {
+    delete state.wrong[word];
+    save();
+    document.querySelectorAll('[data-w="'+word+'"]').forEach(n => n.classList.remove("hit"));
+    toast(word + " 已取消");
+    return;
+  }
+  state.wrong[word] = {word, count:1, sentence:sentenceOf(el), title:el.dataset.title||"", last:new Date().toISOString()};
+  save();
   document.querySelectorAll('[data-w="'+word+'"]').forEach(n => n.classList.add("hit"));
+  toast(word + " 已收入错题本");
 }
 function bindWords(root){
   root.querySelectorAll(".w").forEach(el => {
-    const word = el.dataset.w; let timer = null;
-    el.addEventListener("contextmenu", (e) => { e.preventDefault(); mark(word, el.dataset.src); });
-    el.addEventListener("touchstart", () => { timer = setTimeout(() => mark(word, el.dataset.src), 460); }, {passive:true});
-    el.addEventListener("touchend", () => clearTimeout(timer));
-    el.addEventListener("touchmove", () => clearTimeout(timer));
-    if (state.wrong[word]) el.classList.add("hit");
+    if (state.wrong[el.dataset.w]) el.classList.add("hit");
+    let timer = null, fired = false;
+    const start = (e) => { fired = false; el.classList.add("press"); timer = setTimeout(() => { fired = true; toggle(el); }, 450); };
+    const end = (e) => { clearTimeout(timer); el.classList.remove("press"); if (fired) e.preventDefault(); };
+    el.addEventListener("contextmenu", e => { e.preventDefault(); if (!fired) toggle(el); });
+    el.addEventListener("touchstart", start, {passive:true});
+    el.addEventListener("touchend", end);
+    el.addEventListener("touchmove", () => { clearTimeout(timer); el.classList.remove("press"); });
+    el.addEventListener("mousedown", start);
+    el.addEventListener("mouseup", end);
+    el.addEventListener("mouseleave", () => { clearTimeout(timer); el.classList.remove("press"); });
+    el.addEventListener("click", () => {
+      if (!state.submitted[el.dataset.pid]) return;
+      const g = el.dataset.g;
+      const box = el.closest("article").querySelector(".gloss");
+      if (box && g) box.textContent = el.dataset.w + " · " + g;
+    });
   });
 }
-function renderPassage(a){
-  const targets = new Set(a.targets);
-  const html = a.paragraphs.map(p => "<p>"+p.split(/(\b[A-Za-z][A-Za-z'\-]+\b)/).map(tok => {
+function wrap(text, p, title){
+  const gloss = p.gloss || {};
+  return text.split(/(\b[A-Za-z][A-Za-z'\-]+\b)/).map(tok => {
+    if (!/^[A-Za-z]/.test(tok)) return tok;
     const low = tok.toLowerCase();
-    if (targets.has(low)) return '<span class="w tgt" data-w="'+low+'" data-src="'+a.track+'">'+tok+'</span>';
-    return tok;
-  }).join("")+"</p>").join("");
-  const quiz = a.quiz.map((q,i) => '<div class="quiz" data-qi="'+i+'"><div class="meta">'+q.q+'</div>'+q.options.map((op,j)=>'<button data-j="'+j+'">'+op+'</button>').join("")+"</div>").join("");
-  return '<article><div class="kicker">'+a.track+' · '+a.minutes+' 分钟</div><h2>'+a.title+'</h2>'+html+'<div class="meta">长按虚线下的词约半秒，标进错题本。数据在这台浏览器里。</div>'+quiz+'</article>';
+    const g = gloss[low] || "";
+    return `<span class="w" data-w="${low}" data-g="${g}" data-pid="${p.id}" data-title="${title}">${tok}</span>`;
+  }).join("");
 }
-function wordRows(list, q){
-  q = (q||"").trim().toLowerCase();
-  const rows = list.filter(x => !q || x.w.includes(q)).slice(0, 250);
-  return '<div class="list">'+rows.map(x => '<div class="row"><b class="w" data-w="'+x.w+'" data-src="词库">'+x.w+'</b><span class="meta">机读横线 '+x.m+(x.s? " · "+x.s:"")+'</span></div>').join("")+'</div>';
-}
-function renderWrong(){
-  const items = Object.values(state.wrong).sort((a,b)=>b.count-a.count);
-  if (!items.length) return '<p class="note">还没有标错。在今日文章里长按一个词。</p>';
-  return '<div class="list">'+items.map(x => '<div class="row"><b>'+x.word+'</b><span class="meta">'+(x.source||"")+' · '+x.count+' 次</span></div>').join("")+'</div>';
+function renderPassage(p, locked){
+  if (locked) return `<article><div class="kicker">下一篇</div><h2>${p.title}</h2><p class="lock">先交上一篇。做完才能看下一篇。</p></article>`;
+  const done = !!state.submitted[p.id];
+  const body = p.paragraphs.map(t => "<p>"+wrap(t, p, p.title)+"</p>").join("");
+  const quiz = p.quiz.map((q,i) => {
+    const pick = state.pick[p.id+"-"+i];
+    const opts = q.options.map((op,j) => {
+      let cls = "opt";
+      if (!done && pick===j) cls += " pick";
+      if (done && j===q.a) cls += " good";
+      if (done && pick===j && j!==q.a) cls += " bad";
+      return `<button class="${cls}" data-j="${j}" data-i="${i}" data-pid="${p.id}" ${done?"disabled":""}>${"ABCD"[j]}. ${op}</button>`;
+    }).join("");
+    const why = done ? `<div class="why">${q.why}</div>` : "";
+    return `<div class="quiz"><div class="q">${i+1}. ${q.q}</div>${opts}${why}</div>`;
+  }).join("");
+  const need = p.quiz.length;
+  const got = p.quiz.filter((_,i)=>state.pick[p.id+"-"+i]!==undefined).length;
+  return `<article data-pid="${p.id}"><div class="kicker">${p.minutes} 分钟 · ${PACK.date}</div><h2>${p.title}</h2>${body}<p class="meta">先读完再选。长按单词标进错题本，再长按取消。提交前不显示释义。</p><div class="gloss"></div>${quiz}${done?"":`<button class="act" id="go-${p.id}" ${got<need?"disabled":""}>提交这 ${need} 题</button>`}</article>`;
 }
 function show(tab){
   document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.tab===tab));
   const app = document.getElementById("app");
   if (tab==="today"){
-    app.innerHTML = '<p class="note">两篇是 10 月 1 日样稿，词来自你的两份表，文章是新写的，不是真题原文。长按目标词约半秒。</p>'+DATA.articles.map(renderPassage).join("");
-  } else if (tab==="key"){
-    app.innerHTML = '<p class="note">重点词 '+DATA.key.length+'。机读横线不是手写错次原值。</p><input type="search" placeholder="筛单词" id="q">'+wordRows(DATA.key, "");
-  } else if (tab==="reading"){
-    app.innerHTML = '<p class="note">阅读词可用 '+DATA.reading.length+'。2020 Text 3/4 和 2021 手写页没稳定抽出。</p><input type="search" placeholder="筛单词" id="q">'+wordRows(DATA.reading, "");
+    const p1done = !!state.submitted.p1;
+    app.innerHTML = `<p class="note">今天两篇，新写的 lite，不是真题原文。做完第一篇才解锁第二篇。</p>`+renderPassage(PACK.passages[0], false)+renderPassage(PACK.passages[1], !p1done);
   } else {
-    app.innerHTML = '<div class="bar"><button id="exp">导出错题本</button><button id="clr">清空本机错题</button></div>'+renderWrong();
+    const used = new Set();
+    PACK.passages.forEach(p => Object.keys(p.gloss).forEach(w => used.add(w)));
+    const items = Object.values(state.wrong).sort((a,b)=>b.count-a.count);
+    const rows = items.length ? items.map(x => `<div class="row"><div><b>${x.word}</b><div class="meta">${x.title||""} · ${used.has(x.word)?"已进过文章":"未进文章"} · ${x.count} 次</div><div class="meta">${x.sentence||""}</div></div></div>`).join("") : `<p class="note">还没有标。回今日，长按一个词。</p>`;
+    app.innerHTML = `<div class="bar"><button id="exp">导出 JSON</button><button id="imp">导入 JSON</button><button id="clr">清空</button></div><div class="panel">${rows}</div><input id="file" type="file" accept="application/json" hidden>`;
   }
   bindWords(app);
-  const q = document.getElementById("q");
-  if (q) q.addEventListener("input", () => {
-    const list = tab==="key" ? DATA.key : DATA.reading;
-    app.querySelector(".list").outerHTML = wordRows(list, q.value);
-    bindWords(app);
+  app.querySelectorAll(".opt").forEach(btn => btn.onclick = () => {
+    if (state.submitted[btn.dataset.pid]) return;
+    state.pick[btn.dataset.pid+"-"+btn.dataset.i] = +btn.dataset.j;
+    save();
+    show("today");
   });
-  app.querySelectorAll(".quiz button").forEach(btn => btn.addEventListener("click", () => {
-    const box = btn.parentElement;
-    const qi = +box.dataset.qi;
-    const article = DATA.articles.find(a => box.closest("article").querySelector("h2").textContent === a.title);
-    const right = article.quiz[qi].a;
-    box.querySelectorAll("button").forEach((b,j) => b.classList.add(j===right?"good":(+b.dataset.j===+btn.dataset.j?"bad":"")));
-  }));
+  PACK.passages.forEach(p => {
+    const go = document.getElementById("go-"+p.id);
+    if (!go) return;
+    go.onclick = () => { state.submitted[p.id] = new Date().toISOString(); save(); show("today"); };
+  });
   const exp = document.getElementById("exp");
   if (exp) exp.onclick = () => {
-    const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
-    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "wrongbook.json"; a.click();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:"application/json"}));
+    a.download = "wrongbook.json"; a.click();
+  };
+  const imp = document.getElementById("imp");
+  const file = document.getElementById("file");
+  if (imp) imp.onclick = () => file.click();
+  if (file) file.onchange = () => {
+    const f = file.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = () => { try { state = JSON.parse(r.result); save(); show("wrong"); toast("已导入"); } catch(e){ toast("文件不是错题本"); } };
+    r.readAsText(f);
   };
   const clr = document.getElementById("clr");
-  if (clr) clr.onclick = () => { if (confirm("清空这台手机上的错题本？")) { state.wrong = {}; save(); show("wrong"); } };
+  if (clr) clr.onclick = () => { if (confirm("清空这台手机上的错题和做题记录？")) { state = {wrong:{},pick:{},submitted:{}}; save(); show("wrong"); } };
 }
 document.querySelectorAll("nav button").forEach(b => b.onclick = () => show(b.dataset.tab));
-load();
+show("today");
 </script>
 </body>
 </html>
