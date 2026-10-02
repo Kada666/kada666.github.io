@@ -1,217 +1,262 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="system">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#14120f">
-<title>考研英语看板</title>
-<style>
-  :root {
-    color-scheme: dark;
-    --bg:#14120f; --ink:#f3efe6; --muted:#a3988c; --line:#2c2823;
-    --card:#1c1916; --accent:#e7b48a; --mark:#6b5428; --ok:#b7c7a1; --bad:#d7a394;
-  }
-  * { box-sizing: border-box; }
-  html, body { margin:0; background:var(--bg); color:var(--ink); }
-  body { font:17px/1.7 "Iowan Old Style", Palatino, "Songti SC", serif; padding-bottom:28px; }
-  header { padding:18px 18px 4px; }
-  h1 { font-size:22px; margin:0; font-weight:560; }
-  .sub { margin-top:4px; color:var(--muted); font:13px/1.4 ui-sans-serif, system-ui, sans-serif; }
-  nav { display:flex; gap:8px; padding:12px 14px; position:sticky; top:0; background:rgba(20,18,15,.92); backdrop-filter:blur(10px); z-index:4; }
-  nav button { border:1px solid var(--line); background:transparent; color:var(--ink); border-radius:999px; padding:8px 14px; font:13px/1 ui-sans-serif, system-ui, sans-serif; }
-  nav button.on { background:var(--ink); color:#1a1612; border-color:var(--ink); }
-  main { padding:0 14px 40px; max-width:720px; margin:0 auto; }
-  article, .panel { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px; margin:0 0 12px; }
-  .kicker { font:12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); }
-  h2 { font-size:20px; margin:6px 0 10px; font-weight:560; }
-  p { margin:0 0 12px; }
-  .w { border-radius:3px; -webkit-touch-callout:none; user-select:none; }
-  .w.hit { background:var(--mark); box-shadow:inset 0 -1px 0 var(--accent); }
-  .w.press { background:#3a3228; }
-  .meta, .note, .why, .gloss { font:13px/1.45 ui-sans-serif, system-ui, sans-serif; color:var(--muted); }
-  .note { margin:0 0 12px; }
-  .quiz { margin-top:8px; }
-  .q { margin:0 0 8px; color:var(--ink); }
-  .opt { display:block; width:100%; text-align:left; margin:6px 0; padding:10px 12px; border-radius:12px; border:1px solid var(--line); background:#161410; color:var(--ink); font:14px/1.4 ui-sans-serif, system-ui, sans-serif; }
-  .opt.pick { border-color:var(--accent); }
-  .opt.good { border-color:var(--ok); background:#24291f; }
-  .opt.bad { border-color:var(--bad); background:#2a211e; }
-  .act { width:100%; margin-top:8px; border:0; border-radius:12px; padding:12px; background:var(--accent); color:#1a1612; font:15px/1 ui-sans-serif, system-ui, sans-serif; }
-  .act:disabled { opacity:.45; }
-  .why { margin-top:8px; color:var(--ok); }
-  .gloss { margin-top:6px; color:var(--accent); }
-  .lock { color:var(--muted); font:14px/1.5 ui-sans-serif, system-ui, sans-serif; }
-  .row { display:flex; justify-content:space-between; gap:10px; padding:10px 0; border-bottom:1px solid var(--line); font-family:ui-sans-serif, system-ui, sans-serif; }
-  .row b { font-weight:640; }
-  .bar { display:flex; gap:8px; margin:0 0 12px; }
-  .bar button { flex:1; border:1px solid var(--line); background:#161410; color:var(--ink); border-radius:10px; padding:10px; font:13px/1 ui-sans-serif, system-ui, sans-serif; }
-  .toast { position:fixed; left:50%; bottom:22px; transform:translateX(-50%); background:#f3efe6; color:#1a1612; padding:8px 12px; border-radius:999px; display:none; z-index:6; font:13px/1 ui-sans-serif, system-ui, sans-serif; }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>英语二 lite</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,560&family=Source+Sans+3:wght@400;600&display=swap" />
+  <style>
+    :root, [data-theme="day"] {
+      --paper:#f3eee4; --ink:#1c1915; --muted:#6e655c; --card:#fffdf8; --line:#e4d8c8;
+      --accent:#8c4b28; --mark:#ead7a2; --ok:#245433; --bad:#8a382c; --okbg:#e5f0e4; --badbg:#f6e4df;
+    }
+    [data-theme="night"] {
+      --paper:#141210; --ink:#f3efe6; --muted:#a3988c; --card:#1e1b17; --line:#312c26;
+      --accent:#e4b58a; --mark:#6a5428; --ok:#b7c7a1; --bad:#e0aaa0; --okbg:#243026; --badbg:#322420;
+    }
+    @media (prefers-color-scheme: dark) {
+      [data-theme="system"] {
+        --paper:#141210; --ink:#f3efe6; --muted:#a3988c; --card:#1e1b17; --line:#312c26;
+        --accent:#e4b58a; --mark:#6a5428; --ok:#b7c7a1; --bad:#e0aaa0; --okbg:#243026; --badbg:#322420;
+      }
+    }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font-family:"Source Sans 3", sans-serif; }
+    button { font:inherit; color:inherit; cursor:pointer; }
+    .wrap { max-width:40rem; margin:0 auto; padding:0 1rem 4rem; touch-action:pan-y; }
+    header { position:sticky; top:0; z-index:5; display:flex; align-items:center; justify-content:space-between; gap:.5rem; padding:.75rem 0; background:color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter:blur(8px); }
+    .brand { margin:0; color:var(--accent); letter-spacing:.14em; font-size:.75rem; text-transform:uppercase; }
+    .datebtn, .themes button { height:2rem; border:1px solid var(--line); background:var(--card); border-radius:999px; }
+    .datebtn { padding:0 .75rem; font-size:.75rem; }
+    .themes { display:flex; padding:.125rem; }
+    .themes button { border:0; background:transparent; color:var(--muted); padding:0 .45rem; font-size:.75rem; }
+    .themes button[aria-pressed="true"] { background:var(--ink); color:var(--paper); }
+    .hint { color:var(--muted); font-size:.875rem; }
+    article { background:var(--card); border:1px solid var(--line); border-radius:1rem; padding:1rem; margin-top:1rem; }
+    .kicker { color:var(--accent); letter-spacing:.12em; font-size:.75rem; text-transform:uppercase; }
+    h2 { font-family:Literata, Palatino, serif; font-size:1.25rem; margin:.25rem 0 0; }
+    .passage { font-family:Literata, Palatino, serif; font-size:1.125rem; line-height:1.65; }
+    .w.hit { background:var(--mark); }
+    .opt { display:block; width:100%; text-align:left; min-height:2.75rem; margin-top:.5rem; padding:.5rem .75rem; border-radius:.75rem; border:1px solid var(--line); background:var(--paper); font-size:1rem; }
+    .opt.good { border-color:var(--ok); background:var(--okbg); color:var(--ok); }
+    .opt.bad { border-color:var(--bad); background:var(--badbg); color:var(--bad); }
+    .opt.on { border-color:var(--accent); }
+    .why { color:var(--ok); font-size:.875rem; }
+    .go { width:100%; min-height:2.75rem; margin-top:1rem; border:0; border-radius:.75rem; background:var(--accent); color:var(--paper); }
+    .go:disabled { opacity:.4; }
+    .gloss { color:var(--accent); font-size:.875rem; }
+    .cal { position:absolute; z-index:6; width:16rem; margin-top:.4rem; padding:.75rem; background:var(--card); border:1px solid var(--line); border-radius:1rem; }
+    .cal grid, .grid { display:grid; grid-template-columns:repeat(7,1fr); gap:.2rem; text-align:center; }
+    .cal button.day { height:2rem; border:0; background:transparent; border-radius:.5rem; font-size:.75rem; position:relative; }
+    .cal button.day.sel { background:var(--ink); color:var(--paper); }
+    .cal button.day.has::after { content:""; position:absolute; bottom:.2rem; left:50%; width:.25rem; height:.25rem; border-radius:99px; background:var(--accent); transform:translateX(-50%); }
+    .cal button.day.sel.has::after { background:var(--paper); }
+    .row { display:flex; gap:.5rem; }
+    .row button, .row label { flex:1; min-height:2.75rem; border:1px solid var(--line); background:var(--card); border-radius:.75rem; display:flex; align-items:center; justify-content:center; }
+    .ext { color:var(--accent); }
+    .small { color:var(--muted); font-size:.75rem; }
+    .toast { position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%); background:var(--ink); color:var(--paper); border-radius:999px; padding:.4rem 1rem; font-size:.875rem; }
+    .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+  </style>
 </head>
 <body>
-<header>
-  <h1>考研英语看板</h1>
-  <div class="sub">英语二 lite · 先读再做 · 提交后才给依据 · 长按标词</div>
-</header>
-<nav>
-  <button class="on" data-tab="today">今日</button>
-  <button data-tab="wrong">错题本</button>
-</nav>
-<main id="app"></main>
-<div class="toast" id="toast"></div>
-<script>
-const PACK = {
-  date: "2026-10-02",
-  passages: [
-    {
-      id: "p1",
-      title: "The thin margin",
-      minutes: 4,
-      paragraphs: [
-        "City governments now compete for skilled workers who can live almost anywhere. A new campus or a tax cut is often alleged to accelerate growth. The estimates, however, rarely survive contact with the housing market.",
-        "Where the margin between wages and rent is already thin, a severe shortage of small flats matters more than another slogan. Officials are prone to treat a press release as a policy. An effective initiative is usually dull: it suspends a rule that blocks small homes, then checks whether builders actually show up.",
-        "Optimistic forecasts still transform the headlines. They seldom transform a lease. Cities that prevail are the ones that can indicate, in numbers rather than adjectives, that an ordinary household can remain."
-      ],
-      gloss: {alleged:"声称",estimates:"估计",however:"然而",margin:"差额、余地",severe:"严重的",shortage:"短缺",prone:"易于",initiative:"举措",suspends:"暂停",prevail:"占上风",indicate:"表明"},
-      quiz: [
-        {q:"The author suggests that official growth estimates", options:["are usually confirmed by the housing market","often fail once rent is taken into account","depend on a new campus being built","have already solved the shortage of flats"], a:1, why:"however 后面才是观点：估计一碰到房租就站不住。A 把转折说反了。"}
-      ]
-    },
-    {
-      id: "p2",
-      title: "After the dry year",
-      minutes: 5,
-      paragraphs: [
-        "A long drought does more than fill the news. It cuts acreage and leaves farmers with only a few weeks of certainty. Haste here is expensive. A federal grant can leverage private credit, but it cannot compensate for a staple crop that never came up.",
-        "The shortage is no longer a purely rural problem. Towns that overlook how failed harvests are handled soon feel the pressure on prices. The incentive to recruit seasonal labour weakens once farms cannot pay. Some workers leave. Others stay and plant less.",
-        "Public money still arrives. What it rarely does is arrive before the decision to abandon a field has already been made. The tendency, unless the grant comes earlier, is to insure more and grow less."
-      ],
-      gloss: {drought:"干旱",acreage:"耕地面积",haste:"仓促",federal:"联邦的",leverage:"撬动",compensate:"补偿",shortage:"短缺",overlook:"忽视",incentive:"激励",tendency:"倾向"},
-      quiz: [
-        {q:"A federal grant is described as", options:["a full substitute for a lost harvest","a way to draw in private credit, not a replacement for the crop","the reason farmers plant more acreage","a payment that always arrives before sowing"], a:1, why:"but 把「撬动私人信贷」和「替代绝收」切开。A 是 but 前面的误读。"},
-        {q:"The author's main warning is that", options:["seasonal workers prefer cities","aid often comes after farmers have already given up a field","droughts no longer affect prices","insurance has made farming risk-free"], a:1, why:"末段 rarely 才是结论。D 把 insure more 夸成没有风险。"}
-      ]
+  <div class="wrap" id="app"></div>
+  <script>
+    const STORE = "kaoyan-en-board-v3";
+    const THEME_KEY = "kaoyan-theme";
+    const WASHED = new Set("a an the of to in on for and or as at by from with that this these those it its is are was were be been being have has had do does did not no than then so if when where who which what can will would could should may might their they them he she we you his her our into over after before about there here also just very such most much many out up down your my me him whom whose because while during without within per via onto off each both few more other some any all nor yet still only own same others another every against through above below under again further once why how too don now".split(" "));
+    const IRREG = { estimates:"estimate", leaves:"leave", cuts:"cut", suspends:"suspend", flats:"flat", wages:"wage", checks:"check", matters:"matter" };
+    let packs = [], senses = {}, freq = { papers: 15, df: {} };
+    let state = load();
+    let theme = localStorage.getItem(THEME_KEY) || "system";
+    let tab = "read";
+    let date = "";
+    let gloss = "";
+    let toast = "";
+    let cal = false;
+    let cursor = "";
+    document.documentElement.dataset.theme = theme;
+
+    function load() {
+      try { return JSON.parse(localStorage.getItem(STORE)) || { wrong:{}, pick:{}, submitted:{} }; }
+      catch { return { wrong:{}, pick:{}, submitted:{} }; }
     }
-  ]
-};
-const KEY = "kaoyan-en-board-v2";
-let state = JSON.parse(localStorage.getItem(KEY) || '{"wrong":{},"pick":{},"submitted":{}}');
-function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
-function toast(t){ const el=document.getElementById("toast"); el.textContent=t; el.style.display="block"; clearTimeout(toast._t); toast._t=setTimeout(()=>el.style.display="none", 1200); }
-function sentenceOf(el){
-  const p = el.closest("p");
-  return p ? p.textContent.replace(/\s+/g," ").trim() : "";
-}
-function toggle(el){
-  const word = el.dataset.w;
-  if (state.wrong[word]) {
-    delete state.wrong[word];
-    save();
-    document.querySelectorAll('[data-w="'+word+'"]').forEach(n => n.classList.remove("hit"));
-    toast(word + " 已取消");
-    return;
-  }
-  state.wrong[word] = {word, count:1, sentence:sentenceOf(el), title:el.dataset.title||"", last:new Date().toISOString()};
-  save();
-  document.querySelectorAll('[data-w="'+word+'"]').forEach(n => n.classList.add("hit"));
-  toast(word + " 已收入错题本");
-}
-function bindWords(root){
-  root.querySelectorAll(".w").forEach(el => {
-    if (state.wrong[el.dataset.w]) el.classList.add("hit");
-    let timer = null, fired = false;
-    const start = (e) => { fired = false; el.classList.add("press"); timer = setTimeout(() => { fired = true; toggle(el); }, 450); };
-    const end = (e) => { clearTimeout(timer); el.classList.remove("press"); if (fired) e.preventDefault(); };
-    el.addEventListener("contextmenu", e => { e.preventDefault(); if (!fired) toggle(el); });
-    el.addEventListener("touchstart", start, {passive:true});
-    el.addEventListener("touchend", end);
-    el.addEventListener("touchmove", () => { clearTimeout(timer); el.classList.remove("press"); });
-    el.addEventListener("mousedown", start);
-    el.addEventListener("mouseup", end);
-    el.addEventListener("mouseleave", () => { clearTimeout(timer); el.classList.remove("press"); });
-    el.addEventListener("click", () => {
-      if (!state.submitted[el.dataset.pid]) return;
-      const g = el.dataset.g;
-      const box = el.closest("article").querySelector(".gloss");
-      if (box && g) box.textContent = el.dataset.w + " · " + g;
+    function save() { localStorage.setItem(STORE, JSON.stringify(state)); }
+    function todaySH() {
+      return new Intl.DateTimeFormat("en-CA", { timeZone:"Asia/Shanghai", year:"numeric", month:"2-digit", day:"2-digit" }).format(new Date());
+    }
+    function label(iso) { const [,m,d] = iso.split("-"); return Number(m) + "月" + Number(d) + "日"; }
+    function stem(w) {
+      if (IRREG[w]) return IRREG[w];
+      if (w.endsWith("ies") && w.length > 4) return w.slice(0,-3) + "y";
+      if (w.endsWith("ing") && w.length > 5) return w.slice(0,-3);
+      if (w.endsWith("ed") && w.length > 4) return w.slice(0,-2);
+      if (w.endsWith("s") && !w.endsWith("ss") && w.length > 3) return w.slice(0,-1);
+      return w;
+    }
+    function senseOf(w) {
+      return senses[w] || senses[stem(w)] || { common: "这条常见义还没写入词库。" };
+    }
+    function rateLine(w) {
+      const key = w.toLowerCase();
+      if (WASHED.has(key) || WASHED.has(stem(key))) return "功能词，已从真题词表洗掉，不计算复现概率。";
+      const form = freq.df[key] != null ? key : (freq.df[stem(key)] != null ? stem(key) : key);
+      const hit = freq.df[form] || 0;
+      const note = form !== key && freq.df[form] != null ? "（按词干 " + form + " 计）" : "";
+      const pct = freq.papers ? Math.round(hit / freq.papers * 100) : 0;
+      return "在 2010–2024 共 " + freq.papers + " 套英语二全文中，出现于 " + hit + " 套，复现概率 " + pct + "%" + note + "。";
+    }
+    function say(t) { toast = t; render(); setTimeout(() => { toast = ""; render(); }, 1200); }
+    function toggleWord(word, sentence, title) {
+      if (state.wrong[word]) { delete state.wrong[word]; say(word + " 已取消"); }
+      else { state.wrong[word] = { word, count:1, sentence, title, last:new Date().toISOString() }; say(word + " 已收入错题本"); }
+      save();
+    }
+
+    function render() {
+      const pack = packs.find(p => p.date === date);
+      const app = document.getElementById("app");
+      app.innerHTML = header() + (tab === "read" ? readView(pack) : wrongView()) + (toast ? `<div class="toast">${toast}</div>` : "") + (cal ? calendar() : "");
+      bind();
+    }
+    function header() {
+      return `<header>
+        <button class="datebtn" id="open-cal" type="button">${label(date)}</button>
+        <p class="brand">英语二 lite</p>
+        <div class="themes" role="group">${["system","day","night"].map(id => {
+          const name = {system:"系统", day:"白天", night:"黑夜"}[id];
+          return `<button type="button" data-theme="${id}" aria-pressed="${theme===id}" aria-label="${name}">${name}</button>`;
+        }).join("")}</div>
+      </header>`;
+    }
+    function readView(pack) {
+      if (!pack) return `<p class="hint">${label(date)}还没有文章。</p>`;
+      let html = `<p class="hint">左右滑打开错题本。长按单词约半秒标进错题本，再长按取消。提交前不给对错。</p>`;
+      pack.passages.forEach((p, index) => {
+        const prev = pack.passages[index - 1];
+        const locked = index > 0 && !state.submitted[date + ":" + prev.id];
+        const done = !!state.submitted[date + ":" + p.id];
+        if (locked) {
+          html += `<article><p class="kicker">下一篇</p><h2>${p.title}</h2><p class="hint">先交上一篇。做完才能看下一篇。</p></article>`;
+          return;
+        }
+        html += `<article><p class="kicker">${p.minutes} 分钟</p><h2>${esc(p.title)}</h2>`;
+        p.paragraphs.forEach(para => { html += `<p class="passage">${words(para, p.title, done)}</p>`; });
+        if (done && gloss) html += `<p class="gloss">${esc(gloss)}</p>`;
+        const answered = p.quiz.every((_, i) => state.pick[date + ":" + p.id + "-" + i] != null);
+        p.quiz.forEach((q, i) => {
+          const key = date + ":" + p.id + "-" + i;
+          const picked = state.pick[key];
+          html += `<p>${i+1}. ${esc(q.q)}</p>`;
+          q.options.forEach((op, j) => {
+            const cls = ["opt", done && j === q.a ? "good" : "", done && picked === j && j !== q.a ? "bad" : "", !done && picked === j ? "on" : ""].filter(Boolean).join(" ");
+            html += `<button class="${cls}" data-pick="${key}" data-j="${j}" ${done ? "disabled" : ""}>${"ABCD"[j]}. ${esc(op)}</button>`;
+          });
+          if (done) html += `<p class="why">${esc(q.why)}</p>`;
+        });
+        if (!done) html += `<button class="go" data-submit="${date}:${p.id}" ${answered ? "" : "disabled"}>提交这 ${p.quiz.length} 题</button>`;
+        html += `</article>`;
+      });
+      return html;
+    }
+    function words(text, title, done) {
+      return esc(text).replace(/\b([A-Za-z][A-Za-z'-]+)\b/g, (m) => {
+        const w = m.toLowerCase();
+        const hit = state.wrong[w] ? " hit" : "";
+        return `<span class="w${hit}" data-w="${w}" data-title="${esc(title)}" data-done="${done ? 1 : 0}">${m}</span>`;
+      });
+    }
+    function wrongView() {
+      const items = Object.values(state.wrong);
+      let html = `<p class="hint">错题本。左右滑回文章。</p><div class="row">
+        <button type="button" id="exp">导出</button>
+        <label>导入<input id="imp" class="sr" type="file" accept="application/json" /></label>
+        <button type="button" id="clr">清空</button></div>`;
+      html += card("compose", null, true);
+      if (!items.length) html += `<p class="hint">还没有标。滑回文章，长按一个词。只有很难从常见义推出来的意思，才另写一行熟词生义。</p>`;
+      items.forEach(item => { html += card(item.word, item, false); });
+      return html;
+    }
+    function card(word, item, example) {
+      const s = senseOf(word);
+      return `<article>${example ? `<p class="small">词条示例，不是你的错词</p>` : ""}
+        <h2>${esc(word)}</h2>
+        ${item && item.sentence ? `<p class="small">${esc(item.sentence)}</p>` : ""}
+        <p>常见义 ${esc(s.common)}</p>
+        ${s.extended ? `<p class="ext">熟词生义 ${esc(s.extended)}</p>` : ""}
+        <p class="small">${esc(rateLine(word))}</p></article>`;
+    }
+    function calendar() {
+      const [y, m] = cursor.split("-").map(Number);
+      const pad = (new Date(y, m - 1, 1).getDay() + 6) % 7;
+      const n = new Date(y, m, 0).getDate();
+      const has = new Set(packs.map(p => p.date));
+      const today = todaySH();
+      let cells = "";
+      for (let i = 0; i < pad; i++) cells += `<span></span>`;
+      for (let d = 1; d <= n; d++) {
+        const iso = y + "-" + String(m).padStart(2,"0") + "-" + String(d).padStart(2,"0");
+        const cls = ["day", iso === date ? "sel" : "", has.has(iso) ? "has" : ""].filter(Boolean).join(" ");
+        cells += `<button type="button" class="${cls}" data-day="${iso}" ${iso===today && iso!==date ? `style="color:var(--accent)"` : ""}>${d}</button>`;
+      }
+      return `<div class="cal" id="calbox"><div class="row">
+        <button type="button" id="prev">上月</button><strong>${y}年${m}月</strong><button type="button" id="next">下月</button>
+        </div><div class="grid" style="color:var(--muted);font-size:.75rem;margin-top:.5rem">${"一二三四五六日".split("").map(x=>`<span>${x}</span>`).join("")}</div>
+        <div class="grid">${cells}</div></div>`;
+    }
+    function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&":"&","<":"<",">":">",'"':""" }[c])); }
+
+    let hold = null, origin = null, swipe = null;
+    function bind() {
+      document.querySelectorAll("[data-theme]").forEach(btn => btn.onclick = () => {
+        theme = btn.dataset.theme; localStorage.setItem(THEME_KEY, theme);
+        document.documentElement.dataset.theme = theme; render();
+      });
+      const open = document.getElementById("open-cal");
+      if (open) open.onclick = () => { cursor = date.slice(0,7); cal = !cal; render(); };
+      const prev = document.getElementById("prev");
+      const next = document.getElementById("next");
+      if (prev) prev.onclick = () => { const [y,m] = cursor.split("-").map(Number); const d = new Date(y, m-2, 1); cursor = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"); render(); };
+      if (next) next.onclick = () => { const [y,m] = cursor.split("-").map(Number); const d = new Date(y, m, 1); cursor = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"); render(); };
+      document.querySelectorAll("[data-day]").forEach(btn => btn.onclick = () => { date = btn.dataset.day; cal = false; render(); });
+      document.querySelectorAll("[data-pick]").forEach(btn => btn.onclick = () => { state.pick[btn.dataset.pick] = Number(btn.dataset.j); save(); render(); });
+      document.querySelectorAll("[data-submit]").forEach(btn => btn.onclick = () => { state.submitted[btn.dataset.submit] = new Date().toISOString(); save(); render(); });
+      document.querySelectorAll("[data-w]").forEach(el => {
+        el.oncontextmenu = e => { e.preventDefault(); toggleWord(el.dataset.w, el.closest("p").textContent.replace(/\s+/g," ").trim(), el.dataset.title); };
+        el.onpointerdown = e => { origin = {x:e.clientX,y:e.clientY}; hold = setTimeout(() => { hold = null; toggleWord(el.dataset.w, el.closest("p").textContent.replace(/\s+/g," ").trim(), el.dataset.title); }, 450); };
+        el.onpointermove = e => { if (origin && (Math.abs(e.clientX-origin.x)>10 || Math.abs(e.clientY-origin.y)>10) && hold) { clearTimeout(hold); hold = null; } };
+        el.onpointerup = () => { if (hold) clearTimeout(hold); hold = null; };
+        el.onclick = () => {
+          if (el.dataset.done !== "1") return;
+          const s = senseOf(el.dataset.w);
+          gloss = el.dataset.w + " · " + s.common + (s.extended ? "；熟词生义：" + s.extended : "");
+          render();
+        };
+      });
+      const exp = document.getElementById("exp");
+      if (exp) exp.onclick = () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:"application/json"})); a.download = "wrongbook.json"; a.click(); };
+      const imp = document.getElementById("imp");
+      if (imp) imp.onchange = () => { const f = imp.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { const p = JSON.parse(r.result); state = { wrong:p.wrong||{}, pick:p.pick||{}, submitted:p.submitted||{} }; save(); say("已导入"); } catch { say("文件不是错题本"); } }; r.readAsText(f); };
+      const clr = document.getElementById("clr");
+      if (clr) clr.onclick = () => { if (confirm("清空这台设备上的错题和做题记录？")) { state = { wrong:{}, pick:{}, submitted:{} }; save(); render(); } };
+    }
+    document.getElementById("app").addEventListener("pointerdown", e => {
+      if (e.target.closest("button,a,input,label,.cal")) return;
+      swipe = { x:e.clientX, y:e.clientY };
     });
-  });
-}
-function wrap(text, p, title){
-  const gloss = p.gloss || {};
-  return text.split(/(\b[A-Za-z][A-Za-z'\-]+\b)/).map(tok => {
-    if (!/^[A-Za-z]/.test(tok)) return tok;
-    const low = tok.toLowerCase();
-    const g = gloss[low] || "";
-    return `<span class="w" data-w="${low}" data-g="${g}" data-pid="${p.id}" data-title="${title}">${tok}</span>`;
-  }).join("");
-}
-function renderPassage(p, locked){
-  if (locked) return `<article><div class="kicker">下一篇</div><h2>${p.title}</h2><p class="lock">先交上一篇。做完才能看下一篇。</p></article>`;
-  const done = !!state.submitted[p.id];
-  const body = p.paragraphs.map(t => "<p>"+wrap(t, p, p.title)+"</p>").join("");
-  const quiz = p.quiz.map((q,i) => {
-    const pick = state.pick[p.id+"-"+i];
-    const opts = q.options.map((op,j) => {
-      let cls = "opt";
-      if (!done && pick===j) cls += " pick";
-      if (done && j===q.a) cls += " good";
-      if (done && pick===j && j!==q.a) cls += " bad";
-      return `<button class="${cls}" data-j="${j}" data-i="${i}" data-pid="${p.id}" ${done?"disabled":""}>${"ABCD"[j]}. ${op}</button>`;
-    }).join("");
-    const why = done ? `<div class="why">${q.why}</div>` : "";
-    return `<div class="quiz"><div class="q">${i+1}. ${q.q}</div>${opts}${why}</div>`;
-  }).join("");
-  const need = p.quiz.length;
-  const got = p.quiz.filter((_,i)=>state.pick[p.id+"-"+i]!==undefined).length;
-  return `<article data-pid="${p.id}"><div class="kicker">${p.minutes} 分钟 · ${PACK.date}</div><h2>${p.title}</h2>${body}<p class="meta">先读完再选。长按单词标进错题本，再长按取消。提交前不显示释义。</p><div class="gloss"></div>${quiz}${done?"":`<button class="act" id="go-${p.id}" ${got<need?"disabled":""}>提交这 ${need} 题</button>`}</article>`;
-}
-function show(tab){
-  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.tab===tab));
-  const app = document.getElementById("app");
-  if (tab==="today"){
-    const p1done = !!state.submitted.p1;
-    app.innerHTML = `<p class="note">今天两篇，新写的 lite，不是真题原文。做完第一篇才解锁第二篇。</p>`+renderPassage(PACK.passages[0], false)+renderPassage(PACK.passages[1], !p1done);
-  } else {
-    const used = new Set();
-    PACK.passages.forEach(p => Object.keys(p.gloss).forEach(w => used.add(w)));
-    const items = Object.values(state.wrong).sort((a,b)=>b.count-a.count);
-    const rows = items.length ? items.map(x => `<div class="row"><div><b>${x.word}</b><div class="meta">${x.title||""} · ${used.has(x.word)?"已进过文章":"未进文章"} · ${x.count} 次</div><div class="meta">${x.sentence||""}</div></div></div>`).join("") : `<p class="note">还没有标。回今日，长按一个词。</p>`;
-    app.innerHTML = `<div class="bar"><button id="exp">导出 JSON</button><button id="imp">导入 JSON</button><button id="clr">清空</button></div><div class="panel">${rows}</div><input id="file" type="file" accept="application/json" hidden>`;
-  }
-  bindWords(app);
-  app.querySelectorAll(".opt").forEach(btn => btn.onclick = () => {
-    if (state.submitted[btn.dataset.pid]) return;
-    state.pick[btn.dataset.pid+"-"+btn.dataset.i] = +btn.dataset.j;
-    save();
-    show("today");
-  });
-  PACK.passages.forEach(p => {
-    const go = document.getElementById("go-"+p.id);
-    if (!go) return;
-    go.onclick = () => { state.submitted[p.id] = new Date().toISOString(); save(); show("today"); };
-  });
-  const exp = document.getElementById("exp");
-  if (exp) exp.onclick = () => {
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:"application/json"}));
-    a.download = "wrongbook.json"; a.click();
-  };
-  const imp = document.getElementById("imp");
-  const file = document.getElementById("file");
-  if (imp) imp.onclick = () => file.click();
-  if (file) file.onchange = () => {
-    const f = file.files[0]; if (!f) return;
-    const r = new FileReader();
-    r.onload = () => { try { state = JSON.parse(r.result); save(); show("wrong"); toast("已导入"); } catch(e){ toast("文件不是错题本"); } };
-    r.readAsText(f);
-  };
-  const clr = document.getElementById("clr");
-  if (clr) clr.onclick = () => { if (confirm("清空这台手机上的错题和做题记录？")) { state = {wrong:{},pick:{},submitted:{}}; save(); show("wrong"); } };
-}
-document.querySelectorAll("nav button").forEach(b => b.onclick = () => show(b.dataset.tab));
-show("today");
-</script>
+    document.getElementById("app").addEventListener("pointerup", e => {
+      if (!swipe) return;
+      const dx = e.clientX - swipe.x, dy = e.clientY - swipe.y;
+      swipe = null;
+      if (Math.abs(dx) < 64 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+      tab = tab === "read" ? "wrong" : "read";
+      cal = false; gloss = "";
+      render();
+    });
+
+    Promise.all([fetch("data/packs.json"), fetch("data/senses.json"), fetch("data/freq.json")].map(p => p.then(r => r.json()))).then(([p,s,f]) => {
+      packs = p; senses = s; freq = f; date = packs[packs.length-1].date; cursor = date.slice(0,7); render();
+    }).catch(() => { document.getElementById("app").textContent = "词表没有加载出来。"; });
+  </script>
 </body>
 </html>
