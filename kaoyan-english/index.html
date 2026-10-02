@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>英语二 lite</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,560&family=Source+Sans+3:wght@400;600&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=Noto+Sans+SC:wght@400;600&family=Noto+Serif+SC:wght@500;600&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap" />
   <style>
     :root, [data-theme="day"] {
       --paper:#f3eee4; --ink:#1c1915; --muted:#6e655c; --card:#fffdf8; --line:#e4d8c8;
@@ -21,7 +21,7 @@
       }
     }
     * { box-sizing: border-box; }
-    body { margin:0; background:var(--paper); color:var(--ink); font-family:"Source Sans 3", sans-serif; }
+    body { margin:0; background:var(--paper); color:var(--ink); font-family:"IBM Plex Sans", "Noto Sans SC", sans-serif; }
     button { font:inherit; color:inherit; cursor:pointer; }
     .wrap { max-width:40rem; margin:0 auto; padding:0 1rem 4rem; touch-action:pan-y; }
     header { position:sticky; top:0; z-index:5; display:flex; align-items:center; justify-content:space-between; gap:.5rem; padding:.75rem 0; background:color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter:blur(8px); }
@@ -29,13 +29,19 @@
     .datebtn, .themes button { height:2rem; border:1px solid var(--line); background:var(--card); border-radius:999px; }
     .datebtn { padding:0 .75rem; font-size:.75rem; }
     .themes { display:flex; padding:.125rem; }
-    .themes button { border:0; background:transparent; color:var(--muted); padding:0 .45rem; font-size:.75rem; }
+    .themes button { border:0; background:transparent; color:var(--muted); width:2rem; height:2rem; padding:0; }
     .themes button[aria-pressed="true"] { background:var(--ink); color:var(--paper); }
     .hint { color:var(--muted); font-size:.875rem; }
     article { background:var(--card); border:1px solid var(--line); border-radius:1rem; padding:1rem; margin-top:1rem; }
     .kicker { color:var(--accent); letter-spacing:.12em; font-size:.75rem; text-transform:uppercase; }
-    h2 { font-family:Literata, Palatino, serif; font-size:1.25rem; margin:.25rem 0 0; }
-    .passage { font-family:Literata, Palatino, serif; font-size:1.125rem; line-height:1.65; }
+    h2, .passage, .q, .sense { font-family:"Source Serif 4", "Noto Serif SC", Palatino, serif; }
+    h2 { font-size:1.25rem; margin:.25rem 0 0; }
+    .passage { font-size:1.125rem; line-height:1.65; }
+    .q { font-size:1.125rem; line-height:1.55; }
+    .sense { font-size:1.125rem; line-height:1.6; }
+    .viewport { overflow:hidden; }
+    .track { display:flex; width:200%; transition:transform .3s ease; }
+    .pane { width:50%; }
     .w.hit { background:var(--mark); }
     .opt { display:block; width:100%; text-align:left; min-height:2.75rem; margin-top:.5rem; padding:.5rem .75rem; border-radius:.75rem; border:1px solid var(--line); background:var(--paper); font-size:1rem; }
     .opt.good { border-color:var(--ok); background:var(--okbg); color:var(--ok); }
@@ -49,8 +55,8 @@
     .cal grid, .grid { display:grid; grid-template-columns:repeat(7,1fr); gap:.2rem; text-align:center; }
     .cal button.day { height:2rem; border:0; background:transparent; border-radius:.5rem; font-size:.75rem; position:relative; }
     .cal button.day.sel { background:var(--ink); color:var(--paper); }
-    .cal button.day.has::after { content:""; position:absolute; bottom:.2rem; left:50%; width:.25rem; height:.25rem; border-radius:99px; background:var(--accent); transform:translateX(-50%); }
-    .cal button.day.sel.has::after { background:var(--paper); }
+    .cal button.day.has { background:color-mix(in srgb, var(--accent) 28%, transparent); }
+    .cal button.day.sel.has { background:var(--ink); }
     .row { display:flex; gap:.5rem; }
     .row button, .row label { flex:1; min-height:2.75rem; border:1px solid var(--line); background:var(--card); border-radius:.75rem; display:flex; align-items:center; justify-content:center; }
     .ext { color:var(--accent); }
@@ -99,12 +105,10 @@
     }
     function rateLine(w) {
       const key = w.toLowerCase();
-      if (WASHED.has(key) || WASHED.has(stem(key))) return "功能词，已从真题词表洗掉，不计算复现概率。";
-      const form = freq.df[key] != null ? key : (freq.df[stem(key)] != null ? stem(key) : key);
+      if (WASHED.has(key) || WASHED.has(stem(key))) return null;
+      const form = freq.df[key] != null ? key : stem(key);
       const hit = freq.df[form] || 0;
-      const note = form !== key && freq.df[form] != null ? "（按词干 " + form + " 计）" : "";
-      const pct = freq.papers ? Math.round(hit / freq.papers * 100) : 0;
-      return "在 2010–2024 共 " + freq.papers + " 套英语二全文中，出现于 " + hit + " 套，复现概率 " + pct + "%" + note + "。";
+      return freq.papers ? Math.round(hit / freq.papers * 100) : 0;
     }
     function say(t) { toast = t; render(); setTimeout(() => { toast = ""; render(); }, 1200); }
     function toggleWord(word, sentence, title) {
@@ -113,10 +117,15 @@
       save();
     }
 
+    const ICONS = {
+      system: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>',
+      day: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+      night: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 14.5A8.5 8.5 0 1 1 9.5 3 7 7 0 0 0 21 14.5z"/></svg>'
+    };
     function render() {
       const pack = packs.find(p => p.date === date);
       const app = document.getElementById("app");
-      app.innerHTML = header() + (tab === "read" ? readView(pack) : wrongView()) + (toast ? `<div class="toast">${toast}</div>` : "") + (cal ? calendar() : "");
+      app.innerHTML = header() + `<div class="viewport"><div class="track" id="track" style="transform:${tab === "wrong" ? "translateX(-50%)" : "translateX(0)"}"><div class="pane">${readView(pack)}</div><div class="pane">${wrongView()}</div></div></div>` + (toast ? `<div class="toast">${toast}</div>` : "") + (cal ? calendar() : "");
       bind();
     }
     function header() {
@@ -125,7 +134,7 @@
         <p class="brand">英语二 lite</p>
         <div class="themes" role="group">${["system","day","night"].map(id => {
           const name = {system:"系统", day:"白天", night:"黑夜"}[id];
-          return `<button type="button" data-theme="${id}" aria-pressed="${theme===id}" aria-label="${name}">${name}</button>`;
+          return `<button type="button" data-theme="${id}" aria-pressed="${theme===id}" aria-label="${name}">${ICONS[id]}</button>`;
         }).join("")}</div>
       </header>`;
     }
@@ -147,7 +156,7 @@
         p.quiz.forEach((q, i) => {
           const key = date + ":" + p.id + "-" + i;
           const picked = state.pick[key];
-          html += `<p>${i+1}. ${esc(q.q)}</p>`;
+          html += `<p class="q">${i+1}. ${esc(q.q)}</p>`;
           q.options.forEach((op, j) => {
             const cls = ["opt", done && j === q.a ? "good" : "", done && picked === j && j !== q.a ? "bad" : "", !done && picked === j ? "on" : ""].filter(Boolean).join(" ");
             html += `<button class="${cls}" data-pick="${key}" data-j="${j}" ${done ? "disabled" : ""}>${"ABCD"[j]}. ${esc(op)}</button>`;
@@ -179,12 +188,12 @@
     }
     function card(word, item, example) {
       const s = senseOf(word);
+      const pct = rateLine(word);
       return `<article>${example ? `<p class="small">词条示例，不是你的错词</p>` : ""}
         <h2>${esc(word)}</h2>
-        ${item && item.sentence ? `<p class="small">${esc(item.sentence)}</p>` : ""}
-        <p>常见义 ${esc(s.common)}</p>
-        ${s.extended ? `<p class="ext">熟词生义 ${esc(s.extended)}</p>` : ""}
-        <p class="small">${esc(rateLine(word))}</p></article>`;
+        <p class="sense">意思 ${esc(s.common)}</p>
+        ${s.extended ? `<p class="sense ext">熟词生义 ${esc(s.extended)}</p>` : ""}
+        <p class="sense">出现概率 ${pct == null ? "—" : pct + "%"}</p></article>`;
     }
     function calendar() {
       const [y, m] = cursor.split("-").map(Number);
@@ -204,7 +213,9 @@
         </div><div class="grid" style="color:var(--muted);font-size:.75rem;margin-top:.5rem">${"一二三四五六日".split("").map(x=>`<span>${x}</span>`).join("")}</div>
         <div class="grid">${cells}</div></div>`;
     }
-    function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&":"&","<":"<",">":">",'"':""" }[c])); }
+    function esc(s) {
+      return String(s).replace(/&/g, "\u0026amp;").replace(/</g, "\u0026lt;").replace(/>/g, "\u0026gt;").replace(/"/g, "\u0026quot;");
+    }
 
     let hold = null, origin = null, swipe = null;
     function bind() {
@@ -251,6 +262,8 @@
       if (Math.abs(dx) < 64 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
       tab = tab === "read" ? "wrong" : "read";
       cal = false; gloss = "";
+      const track = document.getElementById("track");
+      if (track) { track.style.transform = tab === "wrong" ? "translateX(-50%)" : "translateX(0)"; return; }
       render();
     });
 
