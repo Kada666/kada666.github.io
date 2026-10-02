@@ -7,62 +7,106 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=Noto+Sans+SC:wght@400;600&family=Noto+Serif+SC:wght@500;600&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap" />
   <style>
     :root, [data-theme="day"] {
-      --paper:#f3eee4; --ink:#1c1915; --muted:#6e655c; --card:#fffdf8; --line:#e4d8c8;
-      --accent:#8c4b28; --mark:#ead7a2; --ok:#245433; --bad:#8a382c; --okbg:#e5f0e4; --badbg:#f6e4df;
+      --paper:#f5f1e9; --ink:#25221e; --muted:#6c655e; --card:#fffdf9; --line:#e5dbce;
+      --accent:#855038; --accent-ink:#fffaf4; --mark:#f0dcaa; --ok:#28553d; --bad:#8d3d31; --okbg:#e8f0e9; --badbg:#f8e9e4;
+      --shadow:0 18px 48px rgba(83,61,40,.075);
     }
     [data-theme="night"] {
-      --paper:#141210; --ink:#f3efe6; --muted:#a3988c; --card:#1e1b17; --line:#312c26;
-      --accent:#e4b58a; --mark:#6a5428; --ok:#b7c7a1; --bad:#e0aaa0; --okbg:#243026; --badbg:#322420;
+      --paper:#171613; --ink:#f2ece2; --muted:#b1a79b; --card:#24211d; --line:#403a33;
+      --accent:#e7b28b; --accent-ink:#201710; --mark:#69502a; --ok:#bbd3b5; --bad:#e1aaa0; --okbg:#28362c; --badbg:#382823;
+      --shadow:0 18px 48px rgba(0,0,0,.18);
     }
     @media (prefers-color-scheme: dark) {
       [data-theme="system"] {
-        --paper:#141210; --ink:#f3efe6; --muted:#a3988c; --card:#1e1b17; --line:#312c26;
-        --accent:#e4b58a; --mark:#6a5428; --ok:#b7c7a1; --bad:#e0aaa0; --okbg:#243026; --badbg:#322420;
+        --paper:#171613; --ink:#f2ece2; --muted:#b1a79b; --card:#24211d; --line:#403a33;
+        --accent:#e7b28b; --accent-ink:#201710; --mark:#69502a; --ok:#bbd3b5; --bad:#e1aaa0; --okbg:#28362c; --badbg:#382823;
+        --shadow:0 18px 48px rgba(0,0,0,.18);
       }
     }
-    * { box-sizing: border-box; }
-    body { margin:0; background:var(--paper); color:var(--ink); font-family:"IBM Plex Sans", "Noto Sans SC", sans-serif; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { min-height:100vh; margin:0; color:var(--ink); background:radial-gradient(circle at 50% -8rem, color-mix(in srgb, var(--accent) 8%, transparent), transparent 28rem), var(--paper); font-family:"IBM Plex Sans","Noto Sans SC",sans-serif; }
     button { font:inherit; color:inherit; cursor:pointer; }
-    .wrap { max-width:40rem; margin:0 auto; padding:0 1rem 4rem; touch-action:pan-y; }
-    header { position:sticky; top:0; z-index:5; display:flex; align-items:center; justify-content:space-between; gap:.5rem; padding:.75rem 0; background:color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter:blur(8px); }
-    .brand { margin:0; color:var(--accent); letter-spacing:.14em; font-size:.75rem; text-transform:uppercase; }
-    .datebtn, .themes button { height:2rem; border:1px solid var(--line); background:var(--card); border-radius:999px; }
-    .datebtn { padding:0 .75rem; font-size:.75rem; }
-    .themes { display:flex; padding:.125rem; }
-    .themes button { border:0; background:transparent; color:var(--muted); width:2rem; height:2rem; padding:0; }
+    button:focus-visible, label:focus-within, .w:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+    .wrap { max-width:45rem; margin:0 auto; padding:0 1.2rem 5rem; touch-action:pan-y; }
+    header { position:sticky; top:0; z-index:5; display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:.55rem; min-height:4.5rem; background:color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter:blur(14px); border-bottom:1px solid color-mix(in srgb, var(--line) 70%, transparent); }
+    .date-wrap { position:relative; justify-self:start; }
+    .brand { margin:0; color:var(--accent); letter-spacing:.16em; font-size:.8rem; font-weight:600; white-space:nowrap; }
+    .datebtn { min-height:2.25rem; padding:0 .85rem; border:1px solid var(--line); border-radius:999px; background:var(--card); color:var(--ink); font-size:.8rem; box-shadow:0 2px 8px rgba(0,0,0,.025); }
+    .datebtn:hover { border-color:var(--accent); }
+    .themes { display:flex; justify-self:end; gap:.12rem; padding:.2rem; border:1px solid var(--line); border-radius:999px; background:var(--card); }
+    .themes button { display:grid; place-items:center; width:2rem; height:2rem; padding:0; border:0; border-radius:50%; background:transparent; color:var(--muted); }
     .themes button[aria-pressed="true"] { background:var(--ink); color:var(--paper); }
-    .hint { color:var(--muted); font-size:.875rem; }
-    article { background:var(--card); border:1px solid var(--line); border-radius:1rem; padding:1rem; margin-top:1rem; }
-    .kicker { color:var(--accent); letter-spacing:.12em; font-size:.75rem; text-transform:uppercase; }
-    h2, .passage, .q, .sense { font-family:"Source Serif 4", "Noto Serif SC", Palatino, serif; }
-    h2 { font-size:1.25rem; margin:.25rem 0 0; }
-    .passage { font-size:1.125rem; line-height:1.65; }
-    .q { font-size:1.125rem; line-height:1.55; }
-    .sense { font-size:1.125rem; line-height:1.6; }
+    .themes button:not([aria-pressed="true"]):hover { color:var(--accent); background:var(--paper); }
+    .overview { padding:1.65rem .25rem .55rem; }
+    .overline, .meta { display:flex; align-items:center; justify-content:space-between; gap:.75rem; color:var(--accent); font-size:.73rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase; }
+    .overline .count { color:var(--muted); letter-spacing:0; text-transform:none; }
+    .progress { height:3px; margin:1rem 0 .9rem; border-radius:999px; background:var(--line); overflow:hidden; }
+    .progress span { display:block; height:100%; width:var(--progress); border-radius:999px; background:var(--accent); transition:width .3s ease; }
+    .hint { margin:.45rem 0; color:var(--muted); font-size:.86rem; line-height:1.65; }
+    article { margin-top:1rem; padding:1.55rem 1.7rem 1.7rem; border:1px solid var(--line); border-radius:1.1rem; background:var(--card); box-shadow:var(--shadow); }
+    article.locked { box-shadow:none; border-style:dashed; }
+    .kicker { margin:0; color:var(--accent); letter-spacing:.12em; font-size:.73rem; font-weight:600; text-transform:uppercase; }
+    h2, .passage, .q, .sense { font-family:"Source Serif 4","Noto Serif SC",Palatino,serif; }
+    h2 { margin:.55rem 0 0; font-size:1.6rem; line-height:1.22; font-weight:600; }
+    .passage { margin:1.3rem 0 0; font-size:1.15rem; line-height:1.78; }
+    .quiz { margin-top:1.7rem; padding-top:1.35rem; border-top:1px solid var(--line); }
+    .q { margin:0 0 .85rem; font-size:1.1rem; line-height:1.55; font-weight:600; }
+    .sense { margin:.55rem 0; font-size:1.12rem; line-height:1.6; }
     .viewport { overflow:hidden; }
-    .track { display:flex; width:200%; transition:transform .3s ease; }
-    .pane { width:50%; }
-    .w.hit { background:var(--mark); }
-    .opt { display:block; width:100%; text-align:left; min-height:2.75rem; margin-top:.5rem; padding:.5rem .75rem; border-radius:.75rem; border:1px solid var(--line); background:var(--paper); font-size:1rem; }
+    .track { display:flex; width:200%; transition:transform .32s cubic-bezier(.22,.61,.36,1); }
+    .pane { width:50%; min-width:0; }
+    .w { border-radius:.13em; -webkit-touch-callout:none; }
+    .w.hit { background:var(--mark); box-shadow:0 0 0 .08em var(--mark); }
+    .w.pressing { background:color-mix(in srgb, var(--mark) 70%, transparent); }
+    .w[data-done="1"] { cursor:pointer; }
+    .opt { display:flex; align-items:flex-start; gap:.8rem; width:100%; min-height:3.15rem; margin:.5rem 0 0; padding:.72rem .85rem; border:1px solid var(--line); border-radius:.72rem; background:var(--paper); text-align:left; font-size:1.1rem; line-height:1.48; transition:background .15s,border-color .15s,transform .15s; }
+    .opt:not(:disabled):hover { border-color:var(--accent); transform:translateY(-1px); }
+    .opt .letter { flex:none; display:grid; place-items:center; width:1.55rem; height:1.55rem; border:1px solid var(--line); border-radius:50%; color:var(--muted); font-size:.8rem; font-weight:600; }
     .opt.good { border-color:var(--ok); background:var(--okbg); color:var(--ok); }
     .opt.bad { border-color:var(--bad); background:var(--badbg); color:var(--bad); }
-    .opt.on { border-color:var(--accent); }
-    .why { color:var(--ok); font-size:.875rem; }
-    .go { width:100%; min-height:2.75rem; margin-top:1rem; border:0; border-radius:.75rem; background:var(--accent); color:var(--paper); }
-    .go:disabled { opacity:.4; }
-    .gloss { color:var(--accent); font-size:.875rem; }
-    .cal { position:absolute; z-index:6; width:16rem; margin-top:.4rem; padding:.75rem; background:var(--card); border:1px solid var(--line); border-radius:1rem; }
-    .cal grid, .grid { display:grid; grid-template-columns:repeat(7,1fr); gap:.2rem; text-align:center; }
-    .cal button.day { height:2rem; border:0; background:transparent; border-radius:.5rem; font-size:.75rem; position:relative; }
+    .opt.on { border-color:var(--accent); background:color-mix(in srgb, var(--accent) 9%, var(--card)); }
+    .opt.good .letter, .opt.bad .letter, .opt.on .letter { border-color:currentColor; color:inherit; }
+    .why { margin:.7rem 0 1.1rem; padding:.65rem .8rem; border-left:2px solid var(--ok); background:var(--okbg); color:var(--ok); font-size:.86rem; line-height:1.6; }
+    .go { min-height:2.85rem; margin-top:1.1rem; padding:.55rem 1.25rem; border:0; border-radius:.68rem; background:var(--accent); color:var(--accent-ink); font-weight:600; }
+    .go:disabled { opacity:.45; cursor:not-allowed; }
+    .gloss { margin:1rem 0 0; padding:.7rem .85rem; border-radius:.6rem; background:color-mix(in srgb, var(--accent) 9%, var(--card)); color:var(--accent); font-size:.86rem; line-height:1.6; }
+    .cal { position:absolute; top:calc(100% + .6rem); left:0; z-index:6; width:min(18.5rem,calc(100vw - 2rem)); padding:.85rem; border:1px solid var(--line); border-radius:1rem; background:var(--card); box-shadow:var(--shadow); }
+    .grid { display:grid; grid-template-columns:repeat(7,1fr); gap:.18rem; text-align:center; }
+    .cal button.day { height:2.2rem; border:0; border-radius:.55rem; background:transparent; font-size:.78rem; }
+    .cal button.day:hover { outline:1px solid var(--accent); }
     .cal button.day.sel { background:var(--ink); color:var(--paper); }
-    .cal button.day.has { background:color-mix(in srgb, var(--accent) 28%, transparent); }
+    .cal button.day.has { background:color-mix(in srgb, var(--accent) 24%, transparent); }
     .cal button.day.sel.has { background:var(--ink); }
     .row { display:flex; gap:.5rem; }
-    .row button, .row label { flex:1; min-height:2.75rem; border:1px solid var(--line); background:var(--card); border-radius:.75rem; display:flex; align-items:center; justify-content:center; }
+    .row button, .row label { flex:1; display:flex; align-items:center; justify-content:center; min-height:2.7rem; border:1px solid var(--line); border-radius:.7rem; background:var(--card); }
+    .row button:hover, .row label:hover { border-color:var(--accent); }
+    .book-actions { margin:1.2rem 0 1.4rem; }
+    .book-card h2 { margin-bottom:1rem; }
+    .book-card .sense + .sense { padding-top:.55rem; border-top:1px solid var(--line); }
+    .book-card.locked-sense { border-style:dashed; box-shadow:none; }
     .ext { color:var(--accent); }
-    .small { color:var(--muted); font-size:.75rem; }
-    .toast { position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%); background:var(--ink); color:var(--paper); border-radius:999px; padding:.4rem 1rem; font-size:.875rem; }
+    .small { color:var(--muted); font-size:.76rem; }
+    .toast { position:fixed; z-index:10; bottom:1.5rem; left:50%; max-width:calc(100vw - 2rem); padding:.6rem 1rem; border-radius:999px; background:var(--ink); color:var(--paper); box-shadow:var(--shadow); font-size:.86rem; text-align:center; transform:translateX(-50%); }
     .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+    @media (max-width:540px) {
+      .wrap { padding:0 .85rem 3rem; }
+      header { min-height:4rem; }
+      .brand { font-size:.7rem; letter-spacing:.1em; }
+      .datebtn { padding:0 .65rem; font-size:.75rem; }
+      .themes { gap:0; padding:.12rem; }
+      .themes button { width:1.75rem; height:1.75rem; }
+      .overview { padding:1.25rem .2rem .3rem; }
+      article { padding:1.15rem 1.1rem 1.3rem; border-radius:.9rem; }
+      h2 { font-size:1.45rem; }
+      .passage { font-size:1.08rem; line-height:1.72; }
+      .q, .opt { font-size:1.03rem; }
+      .go { width:100%; }
+    }
+    @media (prefers-reduced-motion:reduce) {
+      html { scroll-behavior:auto; }
+      .track, .progress span, .opt { transition:none; }
+    }
   </style>
 </head>
 <body>
@@ -71,21 +115,33 @@
     const STORE = "kaoyan-en-board-v3";
     const THEME_KEY = "kaoyan-theme";
     const WASHED = new Set("a an the of to in on for and or as at by from with that this these those it its is are was were be been being have has had do does did not no than then so if when where who which what can will would could should may might their they them he she we you his her our into over after before about there here also just very such most much many out up down your my me him whom whose because while during without within per via onto off each both few more other some any all nor yet still only own same others another every against through above below under again further once why how too don now".split(" "));
-    const IRREG = { estimates:"estimate", leaves:"leave", cuts:"cut", suspends:"suspend", flats:"flat", wages:"wage", checks:"check", matters:"matter" };
+    const IRREG = { estimates:"estimate", leaves:"leave", cuts:"cut", suspends:"suspend", flats:"flat", wages:"wage", checks:"check", matters:"matter", pouches:"pouch" };
     let packs = [], senses = {}, freq = { papers: 15, df: {} };
     let state = load();
-    let theme = localStorage.getItem(THEME_KEY) || "system";
+    let theme = ["system","day","night"].includes(localStorage.getItem(THEME_KEY)) ? localStorage.getItem(THEME_KEY) : "system";
     let tab = "read";
     let date = "";
-    let gloss = "";
+    let gloss = null;
     let toast = "";
     let cal = false;
     let cursor = "";
+    let toastTimer = null;
+    const viewScroll = { read:0, wrong:0 };
     document.documentElement.dataset.theme = theme;
 
+    function emptyState() { return { wrong:{}, pick:{}, submitted:{} }; }
+    function isRecord(value) { return value !== null && typeof value === "object" && !Array.isArray(value); }
+    function validState(value) {
+      return isRecord(value) && ["wrong","pick","submitted"].every(key => isRecord(value[key]))
+        && Object.values(value.wrong).every(item => isRecord(item) && typeof item.word === "string")
+        && Object.values(value.pick).every(pick => Number.isInteger(pick) && pick >= 0 && pick <= 3)
+        && Object.values(value.submitted).every(stamp => typeof stamp === "string");
+    }
     function load() {
-      try { return JSON.parse(localStorage.getItem(STORE)) || { wrong:{}, pick:{}, submitted:{} }; }
-      catch { return { wrong:{}, pick:{}, submitted:{} }; }
+      try {
+        const value = JSON.parse(localStorage.getItem(STORE));
+        return validState(value) ? value : emptyState();
+      } catch { return emptyState(); }
     }
     function save() { localStorage.setItem(STORE, JSON.stringify(state)); }
     function todaySH() {
@@ -93,6 +149,7 @@
     }
     function label(iso) { const [,m,d] = iso.split("-"); return Number(m) + "月" + Number(d) + "日"; }
     function stem(w) {
+      if (w.endsWith("'s")) return w.slice(0,-2);
       if (IRREG[w]) return IRREG[w];
       if (w.endsWith("ies") && w.length > 4) return w.slice(0,-3) + "y";
       if (w.endsWith("ing") && w.length > 5) return w.slice(0,-3);
@@ -110,11 +167,24 @@
       const hit = freq.df[form] || 0;
       return freq.papers ? Math.round(hit / freq.papers * 100) : 0;
     }
-    function say(t) { toast = t; render(); setTimeout(() => { toast = ""; render(); }, 1200); }
-    function toggleWord(word, sentence, title) {
+    function say(t) {
+      clearTimeout(toastTimer);
+      toast = t;
+      render();
+      toastTimer = setTimeout(() => { toast = ""; render(); }, 1600);
+    }
+    function toggleWord(word, sentence, title, source) {
       if (state.wrong[word]) { delete state.wrong[word]; say(word + " 已取消"); }
-      else { state.wrong[word] = { word, count:1, sentence, title, last:new Date().toISOString() }; say(word + " 已收入错题本"); }
+      else { state.wrong[word] = { word, count:1, sentence, title, source, last:new Date().toISOString() }; say(word + " 已收入错题本"); }
       save();
+    }
+    function senseUnlocked(item) {
+      if (!item) return true;
+      if (item.source) return !!state.submitted[item.source];
+      const matches = packs.flatMap(pack => pack.passages
+        .filter(p => p.title === item.title)
+        .map(p => pack.date + ":" + p.id));
+      return !matches.length || matches.every(source => !!state.submitted[source]);
     }
 
     const ICONS = {
@@ -125,75 +195,85 @@
     function render() {
       const pack = packs.find(p => p.date === date);
       const app = document.getElementById("app");
-      app.innerHTML = header() + `<div class="viewport"><div class="track" id="track" style="transform:${tab === "wrong" ? "translateX(-50%)" : "translateX(0)"}"><div class="pane">${readView(pack)}</div><div class="pane">${wrongView()}</div></div></div>` + (toast ? `<div class="toast">${toast}</div>` : "") + (cal ? calendar() : "");
+      app.innerHTML = header() + `<div class="viewport"><div class="track" id="track" style="transform:${tab === "wrong" ? "translateX(-50%)" : "translateX(0)"}"><main class="pane" id="read-pane" ${tab === "wrong" ? "inert aria-hidden=\"true\"" : ""}>${readView(pack)}</main><section class="pane" id="wrong-pane" aria-label="错题本" ${tab === "read" ? "inert aria-hidden=\"true\"" : ""}>${wrongView()}</section></div></div>` + (toast ? `<div class="toast" role="status">${esc(toast)}</div>` : "");
       bind();
     }
     function header() {
       return `<header>
-        <button class="datebtn" id="open-cal" type="button">${label(date)}</button>
+        <div class="date-wrap"><button class="datebtn" id="open-cal" type="button" aria-expanded="${cal}" aria-label="选择日期，当前${label(date)}">${label(date)}</button>${cal ? calendar() : ""}</div>
         <p class="brand">英语二 lite</p>
-        <div class="themes" role="group">${["system","day","night"].map(id => {
+        <div class="themes" role="group" aria-label="外观">${["system","day","night"].map(id => {
           const name = {system:"系统", day:"白天", night:"黑夜"}[id];
           return `<button type="button" data-theme="${id}" aria-pressed="${theme===id}" aria-label="${name}">${ICONS[id]}</button>`;
         }).join("")}</div>
       </header>`;
     }
     function readView(pack) {
-      if (!pack) return `<p class="hint">${label(date)}还没有文章。</p>`;
-      let html = `<p class="hint">左右滑打开错题本。长按单词约半秒标进错题本，再长按取消。提交前不给对错。</p>`;
+      if (!pack) return `<section class="overview"><p class="overline">DAILY READING</p><h2>${label(date)}还没有文章</h2><p class="hint">可以选其他日期；有文章的日期会在日历里显示色块。</p></section>`;
+      const completed = pack.passages.filter(p => state.submitted[date + ":" + p.id]).length;
+      let html = `<section class="overview"><div class="overline"><span>DAILY READING</span><span class="count">${completed} / ${pack.passages.length} 已完成</span></div><div class="progress" style="--progress:${completed / pack.passages.length * 100}%"><span></span></div><p class="hint">左滑看错题本；长按单词约半秒标记，再长按取消。交卷后才显示释义与依据。</p></section>`;
       pack.passages.forEach((p, index) => {
         const prev = pack.passages[index - 1];
         const locked = index > 0 && !state.submitted[date + ":" + prev.id];
         const done = !!state.submitted[date + ":" + p.id];
+        const source = date + ":" + p.id;
+        const number = String(index + 1).padStart(2,"0");
         if (locked) {
-          html += `<article><p class="kicker">下一篇</p><h2>${p.title}</h2><p class="hint">先交上一篇。做完才能看下一篇。</p></article>`;
+          html += `<article class="locked"><p class="kicker">READING ${number} · 待解锁</p><h2>${esc(p.title)}</h2><p class="hint">先交上一篇，完成后打开这篇。</p></article>`;
           return;
         }
-        html += `<article><p class="kicker">${p.minutes} 分钟</p><h2>${esc(p.title)}</h2>`;
-        p.paragraphs.forEach(para => { html += `<p class="passage">${words(para, p.title, done)}</p>`; });
-        if (done && gloss) html += `<p class="gloss">${esc(gloss)}</p>`;
+        html += `<article class="reading-card"><div class="meta"><span>READING ${number}</span><span>${p.minutes} 分钟${done ? " · 已交卷" : ""}</span></div><h2>${esc(p.title)}</h2>`;
+        p.paragraphs.forEach(para => { html += `<p class="passage">${words(para, p.title, done, source)}</p>`; });
+        if (done && gloss && gloss.source === source) html += `<p class="gloss">${esc(gloss.text)}</p>`;
         const answered = p.quiz.every((_, i) => state.pick[date + ":" + p.id + "-" + i] != null);
+        html += `<div class="quiz">`;
         p.quiz.forEach((q, i) => {
           const key = date + ":" + p.id + "-" + i;
           const picked = state.pick[key];
-          html += `<p class="q">${i+1}. ${esc(q.q)}</p>`;
+          const questionId = `q-${date}-${p.id}-${i}`;
+          html += `<p class="q" id="${questionId}">${i+1}. ${esc(q.q)}</p><div role="radiogroup" aria-labelledby="${questionId}">`;
           q.options.forEach((op, j) => {
             const cls = ["opt", done && j === q.a ? "good" : "", done && picked === j && j !== q.a ? "bad" : "", !done && picked === j ? "on" : ""].filter(Boolean).join(" ");
-            html += `<button class="${cls}" data-pick="${key}" data-j="${j}" ${done ? "disabled" : ""}>${"ABCD"[j]}. ${esc(op)}</button>`;
+            html += `<button class="${cls}" type="button" role="radio" data-pick="${key}" data-j="${j}" aria-checked="${picked === j}" ${done ? "disabled" : ""}><span class="letter">${"ABCD"[j]}</span><span>${esc(op)}</span></button>`;
           });
+          html += `</div>`;
           if (done) html += `<p class="why">${esc(q.why)}</p>`;
         });
         if (!done) html += `<button class="go" data-submit="${date}:${p.id}" ${answered ? "" : "disabled"}>提交这 ${p.quiz.length} 题</button>`;
-        html += `</article>`;
+        html += `</div></article>`;
       });
       return html;
     }
-    function words(text, title, done) {
+    function words(text, title, done, source) {
       return esc(text).replace(/\b([A-Za-z][A-Za-z'-]+)\b/g, (m) => {
         const w = m.toLowerCase();
         const hit = state.wrong[w] ? " hit" : "";
-        return `<span class="w${hit}" data-w="${w}" data-title="${esc(title)}" data-done="${done ? 1 : 0}">${m}</span>`;
+        return `<span class="w${hit}" data-w="${w}" data-title="${esc(title)}" data-source="${source}" data-done="${done ? 1 : 0}">${m}</span>`;
       });
     }
     function wrongView() {
-      const items = Object.values(state.wrong);
-      let html = `<p class="hint">错题本。左右滑回文章。</p><div class="row">
+      const items = Object.values(state.wrong).sort((a,b) => (b.last || "").localeCompare(a.last || ""));
+      let html = `<section class="overview"><div class="overline"><span>WORD BOOK</span><span class="count">${items.length} 个词</span></div><p class="hint">右滑回文章。交卷前标记的词会在交卷后显示释义。</p></section><div class="row book-actions">
         <button type="button" id="exp">导出</button>
         <label>导入<input id="imp" class="sr" type="file" accept="application/json" /></label>
         <button type="button" id="clr">清空</button></div>`;
-      html += card("compose", null, true);
-      if (!items.length) html += `<p class="hint">还没有标。滑回文章，长按一个词。只有很难从常见义推出来的意思，才另写一行熟词生义。</p>`;
+      if (!items.length) {
+        html += `<p class="hint">还没有标记。长按文章里的词，就能把它收入这里。</p>`;
+        html += card("compose", null, true);
+      }
       items.forEach(item => { html += card(item.word, item, false); });
       return html;
     }
     function card(word, item, example) {
+      const unlocked = senseUnlocked(item);
       const s = senseOf(word);
       const pct = rateLine(word);
-      return `<article>${example ? `<p class="small">词条示例，不是你的错词</p>` : ""}
+      return `<article class="book-card${unlocked ? "" : " locked-sense"}">${example ? `<p class="small">词条示例，不是你的错词</p>` : ""}
         <h2>${esc(word)}</h2>
+        ${unlocked ? `
         <p class="sense">意思 ${esc(s.common)}</p>
         ${s.extended ? `<p class="sense ext">熟词生义 ${esc(s.extended)}</p>` : ""}
-        <p class="sense">出现概率 ${pct == null ? "—" : pct + "%"}</p></article>`;
+        <p class="sense">出现概率 ${pct == null ? "—" : pct + "%"}</p>` : `<p class="hint">这篇交卷后显示意思与出现概率。</p>`}</article>`;
     }
     function calendar() {
       const [y, m] = cursor.split("-").map(Number);
@@ -217,9 +297,32 @@
       return String(s).replace(/&/g, "\u0026amp;").replace(/</g, "\u0026lt;").replace(/>/g, "\u0026gt;").replace(/"/g, "\u0026quot;");
     }
 
-    let hold = null, origin = null, swipe = null;
+    let hold = null, origin = null, swipe = null, lastHoldAt = 0;
+    function cancelHold() {
+      if (hold) clearTimeout(hold);
+      if (origin?.element) origin.element.classList.remove("pressing");
+      hold = null;
+      origin = null;
+    }
+    function setTab(next) {
+      if (tab === next) return;
+      viewScroll[tab] = window.scrollY;
+      tab = next;
+      cal = false;
+      gloss = null;
+      const track = document.getElementById("track");
+      const read = document.getElementById("read-pane");
+      const wrong = document.getElementById("wrong-pane");
+      if (!track || !read || !wrong) { render(); return; }
+      track.style.transform = tab === "wrong" ? "translateX(-50%)" : "translateX(0)";
+      read.inert = tab === "wrong";
+      wrong.inert = tab === "read";
+      read.setAttribute("aria-hidden", String(tab === "wrong"));
+      wrong.setAttribute("aria-hidden", String(tab === "read"));
+      window.scrollTo({ top:viewScroll[tab], behavior:"instant" });
+    }
     function bind() {
-      document.querySelectorAll("[data-theme]").forEach(btn => btn.onclick = () => {
+      document.querySelectorAll("button[data-theme]").forEach(btn => btn.onclick = () => {
         theme = btn.dataset.theme; localStorage.setItem(THEME_KEY, theme);
         document.documentElement.dataset.theme = theme; render();
       });
@@ -229,30 +332,79 @@
       const next = document.getElementById("next");
       if (prev) prev.onclick = () => { const [y,m] = cursor.split("-").map(Number); const d = new Date(y, m-2, 1); cursor = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"); render(); };
       if (next) next.onclick = () => { const [y,m] = cursor.split("-").map(Number); const d = new Date(y, m, 1); cursor = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"); render(); };
-      document.querySelectorAll("[data-day]").forEach(btn => btn.onclick = () => { date = btn.dataset.day; cal = false; render(); });
+      document.querySelectorAll("[data-day]").forEach(btn => btn.onclick = () => { date = btn.dataset.day; cal = false; tab = "read"; gloss = null; viewScroll.read = 0; render(); window.scrollTo({ top:0, behavior:"instant" }); });
       document.querySelectorAll("[data-pick]").forEach(btn => btn.onclick = () => { state.pick[btn.dataset.pick] = Number(btn.dataset.j); save(); render(); });
       document.querySelectorAll("[data-submit]").forEach(btn => btn.onclick = () => { state.submitted[btn.dataset.submit] = new Date().toISOString(); save(); render(); });
       document.querySelectorAll("[data-w]").forEach(el => {
-        el.oncontextmenu = e => { e.preventDefault(); toggleWord(el.dataset.w, el.closest("p").textContent.replace(/\s+/g," ").trim(), el.dataset.title); };
-        el.onpointerdown = e => { origin = {x:e.clientX,y:e.clientY}; hold = setTimeout(() => { hold = null; toggleWord(el.dataset.w, el.closest("p").textContent.replace(/\s+/g," ").trim(), el.dataset.title); }, 450); };
-        el.onpointermove = e => { if (origin && (Math.abs(e.clientX-origin.x)>10 || Math.abs(e.clientY-origin.y)>10) && hold) { clearTimeout(hold); hold = null; } };
-        el.onpointerup = () => { if (hold) clearTimeout(hold); hold = null; };
+        const mark = () => toggleWord(el.dataset.w, el.closest("p").textContent.replace(/\s+/g," ").trim(), el.dataset.title, el.dataset.source);
+        el.oncontextmenu = e => {
+          e.preventDefault();
+          if (Date.now() - lastHoldAt < 900) return;
+          cancelHold();
+          lastHoldAt = Date.now();
+          mark();
+        };
+        el.onpointerdown = e => {
+          if (e.pointerType === "mouse" && e.button !== 0) return;
+          cancelHold();
+          origin = { x:e.clientX, y:e.clientY, element:el };
+          el.classList.add("pressing");
+          hold = setTimeout(() => {
+            el.classList.remove("pressing");
+            hold = null;
+            origin = null;
+            lastHoldAt = Date.now();
+            mark();
+          }, 480);
+        };
+        el.onpointermove = e => {
+          if (origin?.element === el && (Math.abs(e.clientX-origin.x)>6 || Math.abs(e.clientY-origin.y)>6)) cancelHold();
+        };
+        el.onpointerup = cancelHold;
+        el.onpointercancel = cancelHold;
         el.onclick = () => {
           if (el.dataset.done !== "1") return;
           const s = senseOf(el.dataset.w);
-          gloss = el.dataset.w + " · " + s.common + (s.extended ? "；熟词生义：" + s.extended : "");
+          gloss = { source:el.dataset.source, text:el.dataset.w + " · " + s.common + (s.extended ? "；熟词生义：" + s.extended : "") };
           render();
         };
       });
       const exp = document.getElementById("exp");
-      if (exp) exp.onclick = () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:"application/json"})); a.download = "wrongbook.json"; a.click(); };
+      if (exp) exp.onclick = () => {
+        const a = document.createElement("a");
+        const backup = { version:1, theme, ...state };
+        a.href = URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)],{type:"application/json"}));
+        a.download = "wrongbook.json";
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      };
       const imp = document.getElementById("imp");
-      if (imp) imp.onchange = () => { const f = imp.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { const p = JSON.parse(r.result); state = { wrong:p.wrong||{}, pick:p.pick||{}, submitted:p.submitted||{} }; save(); say("已导入"); } catch { say("文件不是错题本"); } }; r.readAsText(f); };
+      if (imp) imp.onchange = () => {
+        const file = imp.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const backup = JSON.parse(reader.result);
+            if (!validState(backup)) throw new Error("invalid backup");
+            state = { wrong:backup.wrong, pick:backup.pick, submitted:backup.submitted };
+            if (["system","day","night"].includes(backup.theme)) {
+              theme = backup.theme;
+              localStorage.setItem(THEME_KEY, theme);
+              document.documentElement.dataset.theme = theme;
+            }
+            save();
+            say("已导入");
+          } catch { say("文件不是有效的错题本，原有记录未改变"); }
+        };
+        reader.onerror = () => say("文件读取失败，原有记录未改变");
+        reader.readAsText(file);
+      };
       const clr = document.getElementById("clr");
-      if (clr) clr.onclick = () => { if (confirm("清空这台设备上的错题和做题记录？")) { state = { wrong:{}, pick:{}, submitted:{} }; save(); render(); } };
+      if (clr) clr.onclick = () => { if (confirm("清空这台设备上的错题和做题记录？")) { state = emptyState(); save(); render(); } };
     }
     document.getElementById("app").addEventListener("pointerdown", e => {
-      if (e.target.closest("button,a,input,label,.cal")) return;
+      if (e.target.closest("header,.cal,#exp,#clr,#imp,label,a,input")) return;
       swipe = { x:e.clientX, y:e.clientY };
     });
     document.getElementById("app").addEventListener("pointerup", e => {
@@ -260,16 +412,28 @@
       const dx = e.clientX - swipe.x, dy = e.clientY - swipe.y;
       swipe = null;
       if (Math.abs(dx) < 64 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
-      tab = tab === "read" ? "wrong" : "read";
-      cal = false; gloss = "";
-      const track = document.getElementById("track");
-      if (track) { track.style.transform = tab === "wrong" ? "translateX(-50%)" : "translateX(0)"; return; }
-      render();
+      if (tab === "read" && dx < 0) setTab("wrong");
+      if (tab === "wrong" && dx > 0) setTab("read");
+    });
+    document.getElementById("app").addEventListener("pointercancel", () => { swipe = null; cancelHold(); });
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape" && cal) { cal = false; render(); }
     });
 
-    Promise.all([fetch("data/packs.json"), fetch("data/senses.json"), fetch("data/freq.json")].map(p => p.then(r => r.json()))).then(([p,s,f]) => {
-      packs = p; senses = s; freq = f; date = packs[packs.length-1].date; cursor = date.slice(0,7); render();
-    }).catch(() => { document.getElementById("app").textContent = "词表没有加载出来。"; });
+    Promise.all(["data/packs.json","data/senses.json","data/freq.json"].map(async path => {
+      const response = await fetch(path);
+      if (!response.ok) throw new Error(path);
+      return response.json();
+    })).then(([p,s,f]) => {
+      if (!Array.isArray(p) || !p.length || !isRecord(s) || !isRecord(f) || !isRecord(f.df) || !Number.isInteger(f.papers)) throw new Error("invalid data");
+      packs = p; senses = s; freq = f;
+      date = packs.map(pack => pack.date).sort().at(-1);
+      cursor = date.slice(0,7);
+      render();
+    }).catch(() => {
+      document.getElementById("app").innerHTML = '<section class="overview"><h2>阅读数据没有加载出来</h2><p class="hint">请检查网络连接后重试。</p><button class="go" type="button" id="retry">重新加载</button></section>';
+      document.getElementById("retry").onclick = () => location.reload();
+    });
   </script>
 </body>
 </html>
